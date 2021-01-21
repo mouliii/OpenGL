@@ -11,8 +11,6 @@ class Renderer
 public:
 
 	void Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& shader) const;
-	void DrawLine(const VertexArray& va, const IndexBuffer& ib, const Shader& shader);
 	void Clear() const;
 private:
-
 };

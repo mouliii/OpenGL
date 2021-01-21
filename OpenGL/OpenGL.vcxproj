@@ -151,9 +151,16 @@
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\Texture.cpp" />
     <ClCompile Include="src\utils\glm\detail\glm.cpp" />
+    <ClCompile Include="src\utils\imgui\imgui.cpp" />
+    <ClCompile Include="src\utils\imgui\imgui_demo.cpp" />
+    <ClCompile Include="src\utils\imgui\imgui_draw.cpp" />
+    <ClCompile Include="src\utils\imgui\imgui_impl_glfw.cpp" />
+    <ClCompile Include="src\utils\imgui\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="src\utils\imgui\imgui_widgets.cpp" />
     <ClCompile Include="src\utils\stb\stb_image.cpp" />
     <ClCompile Include="src\VertexArray.cpp" />
     <ClCompile Include="src\VertexBuffer.cpp" />
+    <ClCompile Include="test\rectTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\GLErrorCheck.h" />
@@ -445,12 +452,21 @@
     <ClInclude Include="src\utils\glm\vec3.hpp" />
     <ClInclude Include="src\utils\glm\vec4.hpp" />
     <ClInclude Include="src\utils\glm\vector_relational.hpp" />
+    <ClInclude Include="src\utils\imgui\imconfig.h" />
+    <ClInclude Include="src\utils\imgui\imgui.h" />
+    <ClInclude Include="src\utils\imgui\imgui_impl_glfw.h" />
+    <ClInclude Include="src\utils\imgui\imgui_impl_opengl3.h" />
+    <ClInclude Include="src\utils\imgui\imgui_internal.h" />
+    <ClInclude Include="src\utils\imgui\imstb_rectpack.h" />
+    <ClInclude Include="src\utils\imgui\imstb_textedit.h" />
+    <ClInclude Include="src\utils\imgui\imstb_truetype.h" />
     <ClInclude Include="src\utils\stb\stb_image.h" />
     <ClInclude Include="src\Vec2.h" />
     <ClInclude Include="src\Vec3.h" />
     <ClInclude Include="src\VertexArray.h" />
     <ClInclude Include="src\VertexBuffer.h" />
     <ClInclude Include="src\VertexBufferLayout.h" />
+    <ClInclude Include="test\rectTest.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\Basic.shader" />
