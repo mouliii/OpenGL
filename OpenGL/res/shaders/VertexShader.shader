@@ -6,6 +6,7 @@ layout(location = 2) in vec2 aTexCoord;
 
 out vec4 vColor;
 out vec2 texCoord;
+
 uniform mat4 uMVP;
 
 void main() {

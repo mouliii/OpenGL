@@ -145,9 +145,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Buffer.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\Shader.cpp" />
+    <ClCompile Include="src\Texture.cpp" />
     <ClCompile Include="src\utils\glm\detail\glm.cpp" />
     <ClCompile Include="src\utils\imgui\imgui.cpp" />
     <ClCompile Include="src\utils\imgui\imgui_demo.cpp" />
@@ -158,6 +160,8 @@
     <ClCompile Include="src\utils\stb\stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Buffer.h" />
+    <ClInclude Include="src\Texture.h" />
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\utils\glm\common.hpp" />
     <ClInclude Include="src\utils\glm\detail\compute_common.hpp" />
