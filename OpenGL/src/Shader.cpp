@@ -58,6 +58,63 @@ Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath)
 
 }
 
+void Shader::LoadShaders(const std::string& vertexPath, const std::string& fragmentPath)
+{
+    // 1. retrieve the vertex/fragment source code from filePath
+    std::string vertexCode;
+    std::string fragmentCode;
+    std::ifstream vShaderFile;
+    std::ifstream fShaderFile;
+    // ensure ifstream objects can throw exceptions:
+    vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+    fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+    try
+    {
+        // open files
+        vShaderFile.open(vertexPath);
+        fShaderFile.open(fragmentPath);
+        std::stringstream vShaderStream, fShaderStream;
+        // read file's buffer contents into streams
+        vShaderStream << vShaderFile.rdbuf();
+        fShaderStream << fShaderFile.rdbuf();
+        // close file handlers
+        vShaderFile.close();
+        fShaderFile.close();
+        // convert stream into string
+        vertexCode = vShaderStream.str();
+        fragmentCode = fShaderStream.str();
+    }
+    catch (std::ifstream::failure e)
+    {
+        std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ" << std::endl;
+    }
+    const char* vShaderCode = vertexCode.c_str();
+    const char* fShaderCode = fragmentCode.c_str();
+
+    // 2. compile shaders
+    unsigned int vs;
+    unsigned int fs;
+    // vertex shader
+    vs = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vs, 1, &vShaderCode, NULL);
+    glCompileShader(vs);
+    CheckCompileErrors(vs, "VERTEX");
+    // fragment Shader
+    fs = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fs, 1, &fShaderCode, NULL);
+    glCompileShader(fs);
+    CheckCompileErrors(fs, "FRAGMENT");
+    // shader Program
+    id = glCreateProgram();
+    glAttachShader(id, vs);
+    glAttachShader(id, fs);
+    glLinkProgram(id);
+    CheckCompileErrors(id, "PROGRAM");
+    // delete the shaders as they're linked into our program now and no longer necessary
+    glDeleteShader(vs);
+    glDeleteShader(fs);
+}
+
 void Shader::Bind() const
 {
     glUseProgram(id);

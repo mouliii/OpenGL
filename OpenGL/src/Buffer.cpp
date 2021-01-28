@@ -47,12 +47,34 @@ VertexBuffer::VertexBuffer(const void* data, unsigned int size)
 {
 	glGenBuffers(1, &id);
 	glBindBuffer(GL_ARRAY_BUFFER, id);
-	glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, size, data, GL_DYNAMIC_DRAW);
+}
+
+VertexBuffer::VertexBuffer()
+{
+	glGenBuffers(1, &id);
 }
 
 VertexBuffer::~VertexBuffer()
 {
 	glDeleteBuffers(1, &id);
+}
+
+const void VertexBuffer::GenerateBuffer()
+{
+	glGenBuffers(1, &id);
+}
+
+void VertexBuffer::SetData(const void* data, unsigned int size)
+{
+	glBindBuffer(GL_ARRAY_BUFFER, id);
+	glBufferData(GL_ARRAY_BUFFER, size, data, GL_DYNAMIC_DRAW);
+}
+
+void VertexBuffer::SetSubData(const void* data, uint32_t size)
+{
+	glBindBuffer(GL_ARRAY_BUFFER, id);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
 }
 
 void VertexBuffer::SetLayout(const BufferLayout& layout)
@@ -88,9 +110,27 @@ IndexBuffer::IndexBuffer(const void* data, unsigned int count)
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * count, data, GL_STATIC_DRAW);
 }
 
+IndexBuffer::IndexBuffer()
+{
+	glGenBuffers(1, &id);
+	count = 0;
+}
+
 IndexBuffer::~IndexBuffer()
 {
 	glDeleteBuffers(1, &id);
+}
+
+void IndexBuffer::SetData(const void* data, unsigned int count)
+{
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * count, data, GL_STATIC_DRAW);
+	this->count = count;
+}
+
+const unsigned int IndexBuffer::GetCount() const
+{
+	return count;
 }
 
 void IndexBuffer::Bind()const
@@ -137,7 +177,7 @@ void BufferLayout::CalculateStrideAndOffset()
 	}
 }
 
-const int BufferLayout::GetStride() const
+const unsigned int BufferLayout::GetStride() const
 {
 	return stride;
 }

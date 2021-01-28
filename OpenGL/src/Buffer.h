@@ -61,7 +61,7 @@ public:
 	BufferLayout(std::initializer_list<Attribute> attributeList);
 	void AddAttribute(Attribute attribute);
 	void CalculateStrideAndOffset();
-	const int GetStride() const;
+	const unsigned int GetStride() const;
 	const int GetAttributeCount() const;
 	const std::vector<Attribute> GetAttributes() const;
 private:
@@ -73,8 +73,12 @@ private:
 class VertexBuffer
 {
 public:
+	VertexBuffer();
 	VertexBuffer(const void* data, unsigned int size);
 	~VertexBuffer();
+	const void GenerateBuffer();
+	void SetData(const void* data, unsigned int size);
+	void SetSubData(const void* data, uint32_t size);
 	void SetLayout(const BufferLayout& layout);
 	const BufferLayout GetLayout()const;
 	void Bind()const;
@@ -100,12 +104,15 @@ private:
 class IndexBuffer
 {
 public:
+	IndexBuffer();
 	IndexBuffer(const void* data, unsigned int count);
 	~IndexBuffer();
+	void SetData(const void* data, unsigned int count);
+	const unsigned int GetCount() const;
 	void Bind()const;
 	void Unbind()const;
 private:
 	unsigned int id;
-	int count;
+	unsigned int count;
 };
 

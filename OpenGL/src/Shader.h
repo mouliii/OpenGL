@@ -11,7 +11,9 @@
 class Shader
 {
 public:
+	Shader() = default;
 	Shader(const std::string& vertexPath, const std::string& fragmentPath);
+	void LoadShaders(const std::string& vertexPath, const std::string& fragmentPath);
 	void Bind() const;
 	void Unbind() const;
 	void SetUniform1f(const std::string& name, float value);

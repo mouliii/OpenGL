@@ -9,5 +9,6 @@ uniform sampler2D uTexture2;
 uniform float uAlpha;
 
 void main() {
-	fragColor = vColor * mix(texture(uTexture, texCoord), texture(uTexture2, texCoord), uAlpha);
+	fragColor = vColor;
+	// * mix(texture(uTexture, texCoord), texture(uTexture2, texCoord), uAlpha);
 }
