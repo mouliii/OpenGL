@@ -44,15 +44,25 @@ Renderer::Renderer()
 	{
 		std::cout << "OpenGL warning/error at renderer: " << err << std::endl;
 	}
-	
 }
 
 Renderer::~Renderer()
 {
+	vao.Unbind();
+	vbo.Unbind();
+	ibo.Unbind();
+	shader.Unbind();
 }
 
 void Renderer::DrawQuad(const glm::vec3& pos, const glm::vec2& size, const glm::vec4& color)
 {
+	if (data.quadIndexCount >= data.maxIndicesCount)
+	{
+		EndBatch();
+		Flush();
+		BeginBatch();
+	}
+
 	data.VertexBufferPtr->position = { pos.x, pos.y, 0.0f };
 	data.VertexBufferPtr->color = color;
 	data.VertexBufferPtr++;	
@@ -70,10 +80,22 @@ void Renderer::DrawQuad(const glm::vec3& pos, const glm::vec2& size, const glm::
 	data.VertexBufferPtr++;
 
 	data.quadIndexCount += 6;
+	stats.quadCount++;
 }
 
 void Renderer::DrawQuad(const glm::vec3& pos, const glm::vec2& size, unsigned int textureID)
 {
+}
+
+const RenderStats Renderer::GetRenderStats() const
+{
+	return stats;
+}
+
+void Renderer::ResetStats()
+{
+	stats.drawCalls = 0;
+	stats.quadCount = 0;
 }
 
 void Renderer::Clear()
@@ -84,7 +106,6 @@ void Renderer::Clear()
 
 void Renderer::BeginBatch()
 {
-	// shader set viewproj
 	data.quadIndexCount = 0;
 	data.VertexBufferPtr = data.VertexBufferBase;
 }
@@ -92,7 +113,7 @@ void Renderer::BeginBatch()
 void Renderer::Flush()
 {
 	glDrawElements(GL_TRIANGLES, data.quadIndexCount, GL_UNSIGNED_INT, nullptr);
-	
+	stats.drawCalls++;
 }
 
 void Renderer::EndBatch()

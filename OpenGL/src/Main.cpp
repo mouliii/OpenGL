@@ -101,8 +101,7 @@ int main(void)
     {
         std::cout << "OpenGL warning/error - pre loop: " << err << std::endl;
     }
-    // imgui
-    float alphaVal = 0.0f;
+   
     // model
     float scale = 1.0f;
     float rotation(0.0f); // -glm::pi<float>() / 2
@@ -124,7 +123,8 @@ int main(void)
         lastTime = currentTime;
 
         ProcessInput(window);
-
+        /* RESET RENDER STATS*/
+        renderer.ResetStats();
         renderer.Clear();
         renderer.BeginBatch();
 
@@ -133,6 +133,15 @@ int main(void)
         view = camera.GetViewMatrix();
         glm::mat4 mvp = proj * view * transform; 
         renderer.shader.SetUniform4fv("uMVP", mvp);
+
+        for (float y = -800.f; y < 1200.f; y += 10.f)
+        {
+            for (float x = -800.f; x < 1600.f; x += 10.f)
+            {
+                glm::vec4 color = { (x + 10.f) / 20.f, 0.2f, (y + 10.f) / 20.f, 1.0f };
+                renderer.DrawQuad({ x,y,0.0f }, { 5.f, 5.f }, color);
+            }
+        }
 
         rect.Draw(renderer);
         rect2.Draw(renderer);
@@ -152,15 +161,10 @@ int main(void)
         // 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
         {
 
-            ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
-
-            ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-
-            ImGui::SliderFloat("Alpha value", &alphaVal, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+            ImGui::Begin("Hello, world!");
+            ImGui::Text("Quads: %d Draw Calls: %d", renderer.GetRenderStats().quadCount, renderer.GetRenderStats().drawCalls );
             ImGui::SliderFloat3("Transform", &translation[0], -100.0f, 100.0f);
-            ImGui::SliderFloat("Scale", &scale, 0.0f, 3.0f);
             ImGui::SliderFloat3("Rotation", &rotation, -3.14f, 3.14f);
-            ImGui::SliderFloat("tranZ", &translation[2], -10.0f, 10.0f);
             ImGui::Text("CamX %.3f CamY %.3f CamZ %.3f", camera.GetCameraPosition().x, camera.GetCameraPosition().y, camera.GetCameraPosition().z);
             ImGui::Text("CamYaw %.3f CamPitch %.3f", camera.GetCameraAxis().x, camera.GetCameraAxis().y);
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
@@ -214,16 +218,16 @@ void MouseCallback(GLFWwindow* window, double xpos, double ypos)
 {
     if (firstMouse)
     {
-        lastX = xpos;
-        lastY = ypos;
+        lastX = float(xpos);
+        lastY = float(ypos);
         firstMouse = false;
     }
 
-    float xoffset = xpos - lastX;
-    float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+    float xoffset = float(xpos) - lastX;
+    float yoffset = lastY - float(ypos); // reversed since y-coordinates go from bottom to top
 
-    lastX = xpos;
-    lastY = ypos;
+    lastX = float(xpos);
+    lastY = float(ypos);
 
     camera.ProcessMouseMovement(xoffset, yoffset);
 }
@@ -232,5 +236,5 @@ void MouseCallback(GLFWwindow* window, double xpos, double ypos)
 // ----------------------------------------------------------------------
 void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 {
-    camera.ProcessMouseScroll(yoffset);
+    camera.ProcessMouseScroll(float(yoffset));
 }
