@@ -152,6 +152,7 @@ void Shader::SetUniform4f(const std::string& name, float v0, float v1, float v2,
 
 void Shader::SetUniform4f(const std::string& name, glm::vec4 vec4)
 {
+ 
     glUniform4f(GetUniformLocation(name), vec4.x, vec4.y, vec4.z, vec4.w);
 }
 
@@ -159,8 +160,6 @@ void Shader::SetUniform4fv(const std::string& name, glm::mat4 mat4)
 {
     glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, &mat4[0][0]);
 }
-
-
 
 void Shader::CheckCompileErrors(unsigned int shader, std::string type)
 {

@@ -3,6 +3,8 @@
 #include "glm/glm.hpp"
 #include "Buffer.h"
 #include "Shader.h"
+#include "Texture.h"
+#include <array>
 
 struct RenderStats
 {
@@ -14,21 +16,25 @@ struct QuadVertex
 {
 	glm::vec3 position;
 	glm::vec4 color;
-	//glm::vec2 texCoord;
+	glm::vec2 texCoord;
+	int texIndex;
 };
 
 struct RenderData2D
 {
-	const uint32_t maxQuadCount = 10000;
-	const uint32_t maxVertexCount = maxQuadCount * 4; // quadissa 4 verticeä
+	const uint32_t maxQuadCount = 15000;
+	const uint32_t maxVertexCount = maxQuadCount * 4;	// quadissa 4 verticeä
 	const uint32_t maxIndicesCount = maxQuadCount * 6;  // 3 pistettä per kolmio -> 6 neliö
-	const uint32_t maxTextures = 32;					// kato paljon on maximi?
+	static const uint32_t maxTextureSlots = 16;			// kato paljon on maximi?
 
 	QuadVertex* VertexBufferBase = nullptr;
 	QuadVertex* VertexBufferPtr = nullptr;
+	//std::vector<QuadVertex> quad;
 
 	unsigned int quadIndexCount = 0;
-
+	unsigned int whiteTextureID = 0;
+	std::array<unsigned int, maxTextureSlots> textureSlots;
+	unsigned int textureSlotIndex = 1; // 0 white texture
 };
 
 static RenderData2D data;
@@ -40,7 +46,7 @@ public:
 	Renderer();
 	~Renderer();
 	void DrawQuad(const glm::vec3& pos, const glm::vec2& size, const glm::vec4& color);
-	void DrawQuad(const glm::vec3& pos, const glm::vec2& size, unsigned int textureID);
+	void DrawQuad(const glm::vec3& pos, const glm::vec2& size, const Texture& texture);
 	const RenderStats GetRenderStats() const;
 	void ResetStats();
 	void Clear();

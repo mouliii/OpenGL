@@ -7,6 +7,7 @@ Texture::Texture(const std::string& filepath, GLenum type)
     stbi_uc* data = stbi_load(filepath.c_str(), &width, &height, &nChannels, 0);
     if (data)
     {
+        
         glGenTextures(1, &id);
         glBindTexture(type, id);
 
@@ -17,7 +18,7 @@ Texture::Texture(const std::string& filepath, GLenum type)
         // GL_NEAREST
         switch (nChannels)
         {
-        case 3: 
+        case 3:
             glTexImage2D(type, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
             break;
         case 4:
@@ -43,6 +44,7 @@ Texture::~Texture()
 
 void Texture::Bind() const
 {
+    //glBindTextureUnit(slot, id); TOIMII VAIN GL 4.5 + !!!!!!!
     glBindTexture(GL_TEXTURE_2D, id);
 }
 
@@ -54,4 +56,9 @@ void Texture::Unbind() const
 void Texture::Delete() const
 {
     glDeleteTextures(1, &id);
+}
+
+const unsigned int Texture::GetID() const
+{
+    return id;
 }

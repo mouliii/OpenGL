@@ -18,6 +18,7 @@ public:
 	void Bind() const;
 	void Unbind() const;
 	void Delete() const;
+	const unsigned int GetID() const;
 private:
 	int width;
 	int height;

@@ -72,12 +72,13 @@ int main(void)
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
+    std::cout << glGetString(GL_VERSION) << std::endl;
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     // on windows resize
     glViewport(0, 0, WINDOWWIDTH, WINDOWHEIGHT);
     // V-Sync
-    glfwSwapInterval(1);
+    glfwSwapInterval(0);
 
     //Setup IMGUI
     IMGUI_CHECKVERSION();
@@ -91,11 +92,11 @@ int main(void)
     {
         // clearing 1280 error imgui ????
     }
-    
     Renderer renderer;
+    Texture texture("res/textures/awesomeface.png");
     Rectangle rect(glm::vec3(300.f,300.f, 0.0f), glm::vec4(1.0f, 0.5f, 0.25f, 1.0f));
     Rectangle rect2(glm::vec3(200.f, 300.f, 0.0f), glm::vec4(0.5f, 1.0f, 0.25f, 1.0f));
-
+    
     // error check
     while ((err = glGetError()) != GL_NO_ERROR)
     {
@@ -131,20 +132,21 @@ int main(void)
         transform = glm::translate(glm::mat4(1.0f), translation);
         // view
         view = camera.GetViewMatrix();
-        glm::mat4 mvp = proj * view * transform; 
-        renderer.shader.SetUniform4fv("uMVP", mvp);
+        glm::mat4 viewProj = proj * view * transform;
+        renderer.shader.SetUniform4fv("uViewProj", viewProj);
 
-        for (float y = -800.f; y < 1200.f; y += 10.f)
+        for (float y = 100.f; y < 500.f; y += 20.f)
         {
-            for (float x = -800.f; x < 1600.f; x += 10.f)
+            for (float x = 100.f; x < 500.f; x += 20.f)
             {
                 glm::vec4 color = { (x + 10.f) / 20.f, 0.2f, (y + 10.f) / 20.f, 1.0f };
-                renderer.DrawQuad({ x,y,0.0f }, { 5.f, 5.f }, color);
+                renderer.DrawQuad({ x,y,0.0f }, { 15.f, 15.f }, color);
             }
         }
-
         rect.Draw(renderer);
         rect2.Draw(renderer);
+
+        renderer.DrawQuad(glm::vec3(150.f, 150.f, 0.f), glm::vec2(64.f, 64.f), texture );
 
         renderer.EndBatch();
 
