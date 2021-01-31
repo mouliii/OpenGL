@@ -45,7 +45,7 @@ Texture::~Texture()
 void Texture::Bind() const
 {
     //glBindTextureUnit(slot, id); TOIMII VAIN GL 4.5 + !!!!!!!
-    glBindTexture(GL_TEXTURE_2D, id);
+    glBindTexture(type, id);
 }
 
 void Texture::Unbind() const

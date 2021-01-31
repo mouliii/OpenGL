@@ -2,7 +2,6 @@
 
 Renderer::Renderer()
 {
-	
 	vao.Bind();
 	vbo.GenerateBuffer();
 	vbo.SetData(nullptr, data.maxVertexCount * sizeof(QuadVertex));
@@ -11,7 +10,7 @@ Renderer::Renderer()
 			{DataType::FLOAT, 3, "aPosition"},
 			{DataType::FLOAT, 4, "aColor"},
 			{DataType::FLOAT, 2, "aTexCoord"},
-			{DataType::INT, 1, "aTexIndex"}
+			{DataType::FLOAT, 1, "aTexIndex"}
 		}
 	);
 	vbo.SetLayout(layout);
@@ -55,7 +54,7 @@ Renderer::Renderer()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	uint32_t color = 0xffffffff;
+	uint64_t color = 0xfffffffff;
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, &color);
 
 	data.textureSlots[0] = data.whiteTextureID;
@@ -87,12 +86,16 @@ void Renderer::Flush()
 {
 	for (size_t i = 0; i < data.textureSlotIndex; i++)
 	{
-		//glBindTextureUnit(i, data.textureSlots[i]);
 		glActiveTexture(GL_TEXTURE0 + i);
 		glBindTexture(GL_TEXTURE_2D, data.textureSlots[i]);
 	}
 	glDrawElements(GL_TRIANGLES, data.quadIndexCount, GL_UNSIGNED_INT, nullptr);
 	stats.drawCalls++;
+	GLenum err;
+	while ((err = glGetError()) != GL_NO_ERROR)
+	{
+		std::cout << "OpenGL warning/error at renderer: " << err << std::endl;
+	}
 }
 
 void Renderer::EndBatch()
@@ -101,7 +104,6 @@ void Renderer::EndBatch()
 	vbo.SetSubData(data.VertexBufferBase, dataSize);
 	Flush();
 }
-
 
 void Renderer::DrawQuad(const glm::vec3& pos, const glm::vec2& size, const glm::vec4& color)
 {
@@ -112,7 +114,7 @@ void Renderer::DrawQuad(const glm::vec3& pos, const glm::vec2& size, const glm::
 		BeginBatch();
 	}
 
-	const int texIndex = 1;
+	const int texIndex = 0;
 	
 	data.VertexBufferPtr->position = { pos.x, pos.y, 0.0f };
 	data.VertexBufferPtr->color = color;
@@ -153,23 +155,24 @@ void Renderer::DrawQuad(const glm::vec3& pos, const glm::vec2& size, const Textu
 	}
 	const glm::vec4 color(1.0f, 1.0f, 1.0f, 1.0f);
 
-	int textureIndex = 0;
-
-	for (size_t i = 0; i < data.textureSlotIndex; i++)
+	float textureIndex = 0.f;
+	/* EI OLE SHARED JUTTUA */
+	//for (size_t i = 0; i < data.textureSlotIndex; i++)
+	//{
+	//	if (data.textureSlots[i] == texture.GetID())
+	//	{
+	//		textureIndex = i;
+	//		break;
+	//	}
+	//}
+	//
+	if ((int)textureIndex == 0)
 	{
-		if (data.textureSlots[i] == texture.GetID())
-		{
-			textureIndex = i;
-			break;
-		}
-	}
-
-	if (textureIndex == 0)
-	{
-		textureIndex = data.textureSlotIndex;
-		data.textureSlots[data.textureSlotIndex] = texture.GetID();
+		textureIndex = (float)data.textureSlotIndex;
+		data.textureSlots[(int)textureIndex] = texture.GetID();
 		data.textureSlotIndex++;
 	}
+
 
 
 	data.VertexBufferPtr->position = { pos.x, pos.y, 0.0f };

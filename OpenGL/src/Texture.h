@@ -24,5 +24,5 @@ private:
 	int height;
 	int nChannels;
 	unsigned int id = 0;
-	GLenum type = GL_DEBUG_TYPE_ERROR;
+	GLenum type = GL_TEXTURE_2D;
 };

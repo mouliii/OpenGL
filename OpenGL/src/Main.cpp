@@ -19,6 +19,8 @@
 
 #include "Testing/Rectangle.h"
 
+#include "Buffer.h"
+
 #define WINDOWWIDTH 960
 #define WINDOWHEIGHT 540
 
@@ -49,8 +51,8 @@ int main(void)
     if (!glfwInit())
         return -1;
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     /* Create a windowed mode window and its OpenGL context */
@@ -73,8 +75,11 @@ int main(void)
         return -1;
     }
     std::cout << glGetString(GL_VERSION) << std::endl;
+    glEnable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);
+    //glDisable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     // on windows resize
     glViewport(0, 0, WINDOWWIDTH, WINDOWHEIGHT);
     // V-Sync
@@ -92,8 +97,12 @@ int main(void)
     {
         // clearing 1280 error imgui ????
     }
+
     Renderer renderer;
-    Texture texture("res/textures/awesomeface.png");
+    Texture texture1("res/textures/plul.jpg");
+    Texture texture2("res/textures/container.jpg");
+    Texture texture3("res/textures/awesomeface.png");
+    Texture texture4("res/textures/awesomeface.png");
     Rectangle rect(glm::vec3(300.f,300.f, 0.0f), glm::vec4(1.0f, 0.5f, 0.25f, 1.0f));
     Rectangle rect2(glm::vec3(200.f, 300.f, 0.0f), glm::vec4(0.5f, 1.0f, 0.25f, 1.0f));
     
@@ -135,9 +144,9 @@ int main(void)
         glm::mat4 viewProj = proj * view * transform;
         renderer.shader.SetUniform4fv("uViewProj", viewProj);
 
-        for (float y = 100.f; y < 500.f; y += 20.f)
+        for (float y = 100.f; y < 500.f; y += 15.f)
         {
-            for (float x = 100.f; x < 500.f; x += 20.f)
+            for (float x = 100.f; x < 500.f; x += 15.f)
             {
                 glm::vec4 color = { (x + 10.f) / 20.f, 0.2f, (y + 10.f) / 20.f, 1.0f };
                 renderer.DrawQuad({ x,y,0.0f }, { 15.f, 15.f }, color);
@@ -145,10 +154,14 @@ int main(void)
         }
         rect.Draw(renderer);
         rect2.Draw(renderer);
-
-        renderer.DrawQuad(glm::vec3(150.f, 150.f, 0.f), glm::vec2(64.f, 64.f), texture );
-
+        renderer.DrawQuad(glm::vec3(100.f, 150.f, 0.f), glm::vec2(32.f, 32.f), texture1);
+        renderer.DrawQuad(glm::vec3(200.f, 150.f, 0.f), glm::vec2(32.f, 32.f), texture2);
+        renderer.DrawQuad(glm::vec3(300.f, 150.f, 0.f), glm::vec2(32.f, 32.f), texture3);
+        renderer.DrawQuad(glm::vec3(300.f, 300.f, 0.f), glm::vec2(32.f, 32.f), texture4);
+        
         renderer.EndBatch();
+
+        
 
         while ((err = glGetError()) != GL_NO_ERROR)
         {

@@ -21,6 +21,7 @@ static GLenum GetOpenGLDataType(DataType type)
 	default:
 		break;
 	}
+	return -1;
 }
 
 static unsigned int GetDataTypeSize(DataType type)

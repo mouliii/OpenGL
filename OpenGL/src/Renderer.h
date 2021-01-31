@@ -17,7 +17,7 @@ struct QuadVertex
 	glm::vec3 position;
 	glm::vec4 color;
 	glm::vec2 texCoord;
-	int texIndex;
+	float texIndex;
 };
 
 struct RenderData2D
@@ -35,6 +35,7 @@ struct RenderData2D
 	unsigned int whiteTextureID = 0;
 	std::array<unsigned int, maxTextureSlots> textureSlots;
 	unsigned int textureSlotIndex = 1; // 0 white texture
+
 };
 
 static RenderData2D data;
