@@ -88,14 +88,17 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);GLEW_STATIC</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>src\utils;$(SolutionDir)Dependencies\glad\include\glad;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\glad\include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\glad\include\glad;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\glad\include\;src/utils;$(SolutionDir)Dependencies\box2d\include</AdditionalIncludeDirectories>
       <FloatingPointModel>Fast</FloatingPointModel>
+      <UndefinePreprocessorDefinitions>
+      </UndefinePreprocessorDefinitions>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\GLFW\lib-vc2019</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3.lib;%(AdditionalDependencies);opengl32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\GLFW\lib-vc2019;$(SolutionDir)Dependencies\box2d\bin\debug</AdditionalLibraryDirectories>
+      <AdditionalDependencies>box2d.lib;glfw3.lib;%(AdditionalDependencies);opengl32.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -106,16 +109,19 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);GLEW_STATIC</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>src\utils;$(SolutionDir)Dependencies\glad\include\glad;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\glad\include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\glad\include\glad;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\glad\include\;src/utils;$(SolutionDir)Dependencies\box2d\include</AdditionalIncludeDirectories>
       <FloatingPointModel>Fast</FloatingPointModel>
+      <UndefinePreprocessorDefinitions>
+      </UndefinePreprocessorDefinitions>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\GLFW\lib-vc2019</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3.lib;%(AdditionalDependencies);opengl32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\GLFW\lib-vc2019;$(SolutionDir)Dependencies\box2d\bin\release</AdditionalLibraryDirectories>
+      <AdditionalDependencies>box2d.lib;glfw3.lib;%(AdditionalDependencies);opengl32.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -148,7 +154,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Buffer.cpp" />
-    <ClCompile Include="src\Camera.cpp" />
+    <ClCompile Include="src\Collision.cpp" />
+    <ClCompile Include="src\Game.cpp" />
+    <ClCompile Include="src\Games\Physics_test\Box2dTest.cpp" />
+    <ClCompile Include="src\Games\Pong\Pong.cpp" />
+    <ClCompile Include="src\OrthoCamera.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\Renderer.cpp" />
@@ -164,12 +174,61 @@
     <ClCompile Include="src\utils\stb\stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Collision.h" />
+    <ClInclude Include="src\Game.h" />
     <ClInclude Include="src\Buffer.h" />
-    <ClInclude Include="src\Camera.h" />
+    <ClInclude Include="src\Games\BaseGame\BaseGame.h" />
+    <ClInclude Include="src\Games\Physics_test\Box2dTest.h" />
+    <ClInclude Include="src\Games\Pong\Pong.h" />
+    <ClInclude Include="src\Mat3.h" />
+    <ClInclude Include="src\Mat4.h" />
+    <ClInclude Include="src\OrthoCamera.h" />
+    <ClInclude Include="src\Rect.h" />
     <ClInclude Include="src\Renderer.h" />
-    <ClInclude Include="src\Testing\Rectangle.h" />
+    <ClInclude Include="src\Shape.h" />
+    <ClInclude Include="src\Rectangle.h" />
     <ClInclude Include="src\Texture.h" />
     <ClInclude Include="src\Shader.h" />
+    <ClInclude Include="src\utils\box2d\b2_api.h" />
+    <ClInclude Include="src\utils\box2d\b2_block_allocator.h" />
+    <ClInclude Include="src\utils\box2d\b2_body.h" />
+    <ClInclude Include="src\utils\box2d\b2_broad_phase.h" />
+    <ClInclude Include="src\utils\box2d\b2_chain_shape.h" />
+    <ClInclude Include="src\utils\box2d\b2_circle_shape.h" />
+    <ClInclude Include="src\utils\box2d\b2_collision.h" />
+    <ClInclude Include="src\utils\box2d\b2_common.h" />
+    <ClInclude Include="src\utils\box2d\b2_contact.h" />
+    <ClInclude Include="src\utils\box2d\b2_contact_manager.h" />
+    <ClInclude Include="src\utils\box2d\b2_distance.h" />
+    <ClInclude Include="src\utils\box2d\b2_distance_joint.h" />
+    <ClInclude Include="src\utils\box2d\b2_draw.h" />
+    <ClInclude Include="src\utils\box2d\b2_dynamic_tree.h" />
+    <ClInclude Include="src\utils\box2d\b2_edge_shape.h" />
+    <ClInclude Include="src\utils\box2d\b2_fixture.h" />
+    <ClInclude Include="src\utils\box2d\b2_friction_joint.h" />
+    <ClInclude Include="src\utils\box2d\b2_gear_joint.h" />
+    <ClInclude Include="src\utils\box2d\b2_growable_stack.h" />
+    <ClInclude Include="src\utils\box2d\b2_joint.h" />
+    <ClInclude Include="src\utils\box2d\b2_math.h" />
+    <ClInclude Include="src\utils\box2d\b2_motor_joint.h" />
+    <ClInclude Include="src\utils\box2d\b2_mouse_joint.h" />
+    <ClInclude Include="src\utils\box2d\b2_polygon_shape.h" />
+    <ClInclude Include="src\utils\box2d\b2_prismatic_joint.h" />
+    <ClInclude Include="src\utils\box2d\b2_pulley_joint.h" />
+    <ClInclude Include="src\utils\box2d\b2_revolute_joint.h" />
+    <ClInclude Include="src\utils\box2d\b2_rope.h" />
+    <ClInclude Include="src\utils\box2d\b2_settings.h" />
+    <ClInclude Include="src\utils\box2d\b2_shape.h" />
+    <ClInclude Include="src\utils\box2d\b2_stack_allocator.h" />
+    <ClInclude Include="src\utils\box2d\b2_timer.h" />
+    <ClInclude Include="src\utils\box2d\b2_time_of_impact.h" />
+    <ClInclude Include="src\utils\box2d\b2_time_step.h" />
+    <ClInclude Include="src\utils\box2d\b2_types.h" />
+    <ClInclude Include="src\utils\box2d\b2_weld_joint.h" />
+    <ClInclude Include="src\utils\box2d\b2_wheel_joint.h" />
+    <ClInclude Include="src\utils\box2d\b2_world.h" />
+    <ClInclude Include="src\utils\box2d\b2_world_callbacks.h" />
+    <ClInclude Include="src\utils\box2d\box2d.h" />
     <ClInclude Include="src\utils\glm\common.hpp" />
     <ClInclude Include="src\utils\glm\detail\compute_common.hpp" />
     <ClInclude Include="src\utils\glm\detail\compute_vector_relational.hpp" />
@@ -461,6 +520,8 @@
     <ClInclude Include="src\utils\imgui\imstb_textedit.h" />
     <ClInclude Include="src\utils\imgui\imstb_truetype.h" />
     <ClInclude Include="src\utils\stb\stb_image.h" />
+    <ClInclude Include="src\Vec2.h" />
+    <ClInclude Include="src\Vec3.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\FragmentShader.shader" />

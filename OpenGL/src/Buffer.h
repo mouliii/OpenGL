@@ -75,6 +75,8 @@ class VertexBuffer
 {
 public:
 	VertexBuffer();
+	VertexBuffer(const VertexBuffer& vb) = delete;
+	VertexBuffer& operator=(const VertexBuffer & vb) = delete;
 	VertexBuffer(const void* data, unsigned int size);
 	~VertexBuffer();
 	const void GenerateBuffer();
@@ -93,6 +95,8 @@ class VertexArray
 {
 public:
 	VertexArray();
+	VertexArray(const VertexArray& vb) = delete;
+	VertexArray& operator=(const VertexArray& vb) = delete;
 	~VertexArray();
 	// bindaa vao ja vbo. sitten looppaa vbo layoutin läpi ja enabloi ne.
 	void AddVertexBuffer(const VertexBuffer& vb); 
@@ -106,6 +110,8 @@ class IndexBuffer
 {
 public:
 	IndexBuffer();
+	IndexBuffer(const IndexBuffer& vb) = delete;
+	IndexBuffer& operator=(const IndexBuffer& vb) = delete;
 	IndexBuffer(const void* data, unsigned int count);
 	~IndexBuffer();
 	void SetData(const void* data, unsigned int count);

@@ -1,10 +1,12 @@
 #pragma once
 
+#include <array>
+#include <vector>
 #include "glm/glm.hpp"
 #include "Buffer.h"
 #include "Shader.h"
 #include "Texture.h"
-#include <array>
+#include "Vec2.h"
 
 struct RenderStats
 {
@@ -14,9 +16,8 @@ struct RenderStats
 
 struct QuadVertex
 {
-	glm::vec3 position;
+	glm::vec4 posAndTexCoord;
 	glm::vec4 color;
-	glm::vec2 texCoord;
 	float texIndex;
 };
 
@@ -46,8 +47,10 @@ class Renderer
 public:
 	Renderer();
 	~Renderer();
-	void DrawQuad(const glm::vec3& pos, const glm::vec2& size, const glm::vec4& color);
-	void DrawQuad(const glm::vec3& pos, const glm::vec2& size, const Texture& texture);
+	void DrawQuad(const glm::vec2& pos, const glm::vec2& size, const glm::vec4& color);
+	void DrawQuad(const glm::vec2& pos, const glm::vec2& size, const Texture& texture);
+	void DrawQuad(const std::vector<Vec2f>& vertices, const glm::vec4& color);
+	void DrawLine(const std::vector<Vec2f>& points);
 	const RenderStats GetRenderStats() const;
 	void ResetStats();
 	void Clear();

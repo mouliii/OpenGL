@@ -7,9 +7,8 @@ Renderer::Renderer()
 	vbo.SetData(nullptr, data.maxVertexCount * sizeof(QuadVertex));
 	BufferLayout layout(
 		{
-			{DataType::FLOAT, 3, "aPosition"},
+			{DataType::FLOAT, 4, "aPosAndTexCoord"},
 			{DataType::FLOAT, 4, "aColor"},
-			{DataType::FLOAT, 2, "aTexCoord"},
 			{DataType::FLOAT, 1, "aTexIndex"}
 		}
 	);
@@ -105,38 +104,34 @@ void Renderer::EndBatch()
 	Flush();
 }
 
-void Renderer::DrawQuad(const glm::vec3& pos, const glm::vec2& size, const glm::vec4& color)
+void Renderer::DrawQuad(const glm::vec2& pos, const glm::vec2& size, const glm::vec4& color)
 {
 	if (data.quadIndexCount >= data.maxIndicesCount)
 	{
 		EndBatch();
-		Flush();
+		//Flush();
 		BeginBatch();
 	}
 
 	const int texIndex = 0;
 	
-	data.VertexBufferPtr->position = { pos.x, pos.y, 0.0f };
+	data.VertexBufferPtr->posAndTexCoord = { pos.x, pos.y, 0.0f, 0.0f };
 	data.VertexBufferPtr->color = color;
-	data.VertexBufferPtr->texCoord = { 0.0f, 0.0f };
 	data.VertexBufferPtr->texIndex = texIndex;
 	data.VertexBufferPtr++;	
 
-	data.VertexBufferPtr->position = {pos.x + size.x, pos.y, 0.0f};
+	data.VertexBufferPtr->posAndTexCoord = {pos.x + size.x, pos.y, 1.0f, 0.0f};
 	data.VertexBufferPtr->color = color;
-	data.VertexBufferPtr->texCoord = { 1.0f, 0.0f };
 	data.VertexBufferPtr->texIndex = texIndex;
 	data.VertexBufferPtr++;
 
-	data.VertexBufferPtr->position = { pos.x + size.x, pos.y + size.y, 0.0f };
+	data.VertexBufferPtr->posAndTexCoord = { pos.x + size.x, pos.y + size.y, 1.0f, 1.0f };
 	data.VertexBufferPtr->color = color;
-	data.VertexBufferPtr->texCoord = { 1.0f, 1.0f };
 	data.VertexBufferPtr->texIndex = texIndex;
 	data.VertexBufferPtr++;
 
-	data.VertexBufferPtr->position = { pos.x, pos.y + size.y, 0.0f };
+	data.VertexBufferPtr->posAndTexCoord = { pos.x, pos.y + size.y, 0.0f, 1.0f };
 	data.VertexBufferPtr->color = color;
-	data.VertexBufferPtr->texCoord = { 0.0f, 1.0f };
 	data.VertexBufferPtr->texIndex = texIndex;
 	data.VertexBufferPtr++;
 
@@ -144,13 +139,13 @@ void Renderer::DrawQuad(const glm::vec3& pos, const glm::vec2& size, const glm::
 	stats.quadCount++;
 }
 
-void Renderer::DrawQuad(const glm::vec3& pos, const glm::vec2& size, const Texture& texture)
+void Renderer::DrawQuad(const glm::vec2& pos, const glm::vec2& size, const Texture& texture)
 {
 	// TODO jos max textuurit ylittyy
 	if (data.quadIndexCount >= data.maxIndicesCount)
 	{
 		EndBatch();
-		Flush();
+		//Flush();
 		BeginBatch();
 	}
 	const glm::vec4 color(1.0f, 1.0f, 1.0f, 1.0f);
@@ -173,34 +168,77 @@ void Renderer::DrawQuad(const glm::vec3& pos, const glm::vec2& size, const Textu
 		data.textureSlotIndex++;
 	}
 
-
-
-	data.VertexBufferPtr->position = { pos.x, pos.y, 0.0f };
+	data.VertexBufferPtr->posAndTexCoord = { pos.x, pos.y, 0.0f, 0.0f };
 	data.VertexBufferPtr->color = color;
-	data.VertexBufferPtr->texCoord = { 0.0f, 0.0f };
 	data.VertexBufferPtr->texIndex = textureIndex;
 	data.VertexBufferPtr++;
 
-	data.VertexBufferPtr->position = { pos.x + size.x, pos.y, 0.0f };
+	data.VertexBufferPtr->posAndTexCoord = { pos.x + size.x, pos.y, 1.0f, 0.0f };
 	data.VertexBufferPtr->color = color;
-	data.VertexBufferPtr->texCoord = { 1.0f, 0.0f };
 	data.VertexBufferPtr->texIndex = textureIndex;
 	data.VertexBufferPtr++;
 
-	data.VertexBufferPtr->position = { pos.x + size.x, pos.y + size.y, 0.0f };
+	data.VertexBufferPtr->posAndTexCoord = { pos.x + size.x, pos.y + size.y, 1.0f, 1.0f };
 	data.VertexBufferPtr->color = color;
-	data.VertexBufferPtr->texCoord = { 1.0f, 1.0f };
 	data.VertexBufferPtr->texIndex = textureIndex;
 	data.VertexBufferPtr++;
 
-	data.VertexBufferPtr->position = { pos.x, pos.y + size.y, 0.0f };
+	data.VertexBufferPtr->posAndTexCoord = { pos.x, pos.y + size.y, 0.0f, 1.0f };
 	data.VertexBufferPtr->color = color;
-	data.VertexBufferPtr->texCoord = { 0.0f, 1.0f };
 	data.VertexBufferPtr->texIndex = textureIndex;
 	data.VertexBufferPtr++;
 
 	data.quadIndexCount += 6;
 	stats.quadCount++;
+}
+
+void Renderer::DrawQuad(const std::vector<Vec2f>& vertices, const glm::vec4& color)
+{
+	if (data.quadIndexCount >= data.maxIndicesCount)
+	{
+		EndBatch();
+		//Flush();
+		BeginBatch();
+	}
+
+	const int texIndex = 0;
+
+	data.VertexBufferPtr->posAndTexCoord = { vertices[0].x,  vertices[0].y, 0.0f, 0.0f };
+	data.VertexBufferPtr->color = color;
+	data.VertexBufferPtr->texIndex = texIndex;
+	data.VertexBufferPtr++;
+
+	data.VertexBufferPtr->posAndTexCoord = {  vertices[1].x, vertices[1].y, 1.0f, 0.0f };
+	data.VertexBufferPtr->color = color;
+	data.VertexBufferPtr->texIndex = texIndex;
+	data.VertexBufferPtr++;
+
+	data.VertexBufferPtr->posAndTexCoord = { vertices[2].x, vertices[2].y, 1.0f, 1.0f };
+	data.VertexBufferPtr->color = color;
+	data.VertexBufferPtr->texIndex = texIndex;
+	data.VertexBufferPtr++;
+
+	data.VertexBufferPtr->posAndTexCoord = { vertices[3].x, vertices[3].y, 0.0f, 1.0f };
+	data.VertexBufferPtr->color = color;
+	data.VertexBufferPtr->texIndex = texIndex;
+	data.VertexBufferPtr++;
+
+	data.quadIndexCount += 6;
+	stats.quadCount++;
+}
+
+void Renderer::DrawLine(const std::vector<Vec2f>& points)
+{
+	for (size_t i = 0; i < points.size(); i++)
+	{
+
+	}
+	stats.drawCalls++;
+	GLenum err;
+	while ((err = glGetError()) != GL_NO_ERROR)
+	{
+		std::cout << "OpenGL warning/error at renderer: " << err << std::endl;
+	}
 }
 
 const RenderStats Renderer::GetRenderStats() const
@@ -220,3 +258,98 @@ void Renderer::Clear()
 	glClear(GL_COLOR_BUFFER_BIT);
 }
 
+
+
+/*
+
+class Line {
+	int shaderProgram;
+	unsigned int VBO, VAO;
+	vector<float> vertices;
+	vec3 startPoint;
+	vec3 endPoint;
+	mat4 MVP;
+	vec3 lineColor;
+public:
+	Line(vec3 start, vec3 end) {
+
+		startPoint = start;
+		endPoint = end;
+		lineColor = vec3(1,1,1);
+
+		const char *vertexShaderSource = "#version 330 core\n"
+			"layout (location = 0) in vec3 aPos;\n"
+			"uniform mat4 MVP;\n"
+			"void main()\n"
+			"{\n"
+			"   gl_Position = MVP * vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+			"}\0";
+		const char *fragmentShaderSource = "#version 330 core\n"
+			"out vec4 FragColor;\n"
+			"uniform vec3 color;\n"
+			"void main()\n"
+			"{\n"
+			"   FragColor = vec4(color, 1.0f);\n"
+			"}\n\0";
+
+		// vertex shader
+		int vertexShader = glCreateShader(GL_VERTEX_SHADER);
+		glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+		glCompileShader(vertexShader);
+		// check for shader compile errors
+
+		// fragment shader
+		int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+		glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+		glCompileShader(fragmentShader);
+		// check for shader compile errors
+
+		// link shaders
+		shaderProgram = glCreateProgram();
+		glAttachShader(shaderProgram, vertexShader);
+		glAttachShader(shaderProgram, fragmentShader);
+		glLinkProgram(shaderProgram);
+		// check for linking errors
+
+		glDeleteShader(vertexShader);
+		glDeleteShader(fragmentShader);
+
+		vertices = {
+			 start.x, start.y, start.z,
+			 end.x, end.y, end.z,
+
+		};
+
+		glGenVertexArrays(1, &VAO);
+		glGenBuffers(1, &VBO);
+		glBindVertexArray(VAO);
+
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices.data(), GL_STATIC_DRAW);
+
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(0);
+
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindVertexArray(0);
+
+	}
+
+	int setMVP(mat4 mvp) {
+		MVP = mvp;
+	}
+
+	int setColor(vec3 color) {
+		lineColor = color;
+	}
+
+	int draw() {
+		glUseProgram(shaderProgram);
+		glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "MVP"), 1, GL_FALSE, &MVP[0][0]);
+		glUniform3fv(glGetUniformLocation(shaderProgram, "color"), 1, &lineColor[0]);
+
+		glBindVertexArray(VAO);
+		glDrawArrays(GL_LINES, 0, 2);
+		return 0;
+	}
+*/

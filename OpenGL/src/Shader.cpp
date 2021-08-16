@@ -115,6 +115,47 @@ void Shader::LoadShaders(const std::string& vertexPath, const std::string& fragm
     glDeleteShader(fs);
 }
 
+void Shader::LoadFragmentShader(const std::string& fragmentPath)
+{
+    // 1. retrieve the /fragment source code from filePath
+    std::string fragmentCode;
+    std::ifstream fShaderFile;
+    // ensure ifstream objects can throw exceptions:
+    fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+    try
+    {
+        // open files
+        fShaderFile.open(fragmentPath);
+        std::stringstream fShaderStream;
+        // read file's buffer contents into streams
+        fShaderStream << fShaderFile.rdbuf();
+        // close file handlers
+        fShaderFile.close();
+        // convert stream into string
+        fragmentCode = fShaderStream.str();
+    }
+    catch (std::ifstream::failure e)
+    {
+        std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ" << std::endl;
+    }
+    const char* fShaderCode = fragmentCode.c_str();
+
+    // 2. compile shader
+    unsigned int fs;
+    // fragment Shader
+    fs = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fs, 1, &fShaderCode, NULL);
+    glCompileShader(fs);
+    CheckCompileErrors(fs, "FRAGMENT");
+    // shader Program
+    id = glCreateProgram();
+    glAttachShader(id, fs);
+    glLinkProgram(id);
+    CheckCompileErrors(id, "PROGRAM");
+    // delete the shaders as they're linked into our program now and no longer necessary
+    glDeleteShader(fs);
+}
+
 void Shader::Bind() const
 {
     glUseProgram(id);
