@@ -1,4 +1,5 @@
 #include "Game.h"
+#include "Line.h"
 
 Game::Game(GLFWwindow* window)
 	: 
@@ -8,12 +9,12 @@ Game::Game(GLFWwindow* window)
     rect2({ 300.f,400.f }, { 20.f,40.f }, { 0.4f,1.0f,0.2f,1.0f })
 {
     game = new Pong();
+    renderer.shader.cam = &camera;
 }
 
 Game::~Game()
 {
     std::cout << "Destroying game class \n";
-
 }
 
 void Game::Run()
@@ -25,7 +26,6 @@ void Game::Run()
     glm::mat4 viewProj = camera.GetViewProjectionMatrix();
     renderer.shader.SetUniform4fv("uViewProj", viewProj);
  
-
     Update();
     Draw();
 
@@ -48,7 +48,6 @@ void Game::Update()
     glfwGetCursorPos(window, &mx, &my);
     my = double(windowHeight) - my;
     mousePos = Vec2f(float(mx), float(my));
-
     //game->Update(window, dt);
     rect1.pos = mousePos;
 
@@ -72,4 +71,7 @@ void Game::Draw()
     //game->Draw(renderer);
     rect2.Draw(renderer);
     rect1.Draw(renderer);
+
+    //Line line(Vec2f(0.f, 0.f), Vec2f(960.f, 540.f));
+    //line.Draw(&camera);
 }

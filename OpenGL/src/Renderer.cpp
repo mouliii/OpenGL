@@ -90,6 +90,7 @@ void Renderer::Flush()
 	}
 	glDrawElements(GL_TRIANGLES, data.quadIndexCount, GL_UNSIGNED_INT, nullptr);
 	stats.drawCalls++;
+
 	GLenum err;
 	while ((err = glGetError()) != GL_NO_ERROR)
 	{
@@ -225,20 +226,6 @@ void Renderer::DrawQuad(const std::vector<Vec2f>& vertices, const glm::vec4& col
 
 	data.quadIndexCount += 6;
 	stats.quadCount++;
-}
-
-void Renderer::DrawLine(const std::vector<Vec2f>& points)
-{
-	for (size_t i = 0; i < points.size(); i++)
-	{
-
-	}
-	stats.drawCalls++;
-	GLenum err;
-	while ((err = glGetError()) != GL_NO_ERROR)
-	{
-		std::cout << "OpenGL warning/error at renderer: " << err << std::endl;
-	}
 }
 
 const RenderStats Renderer::GetRenderStats() const

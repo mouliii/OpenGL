@@ -1136,6 +1136,9 @@
     <ClInclude Include="src\Collision.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Line.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\utils\glm\detail\func_common.inl">
@@ -1548,6 +1551,8 @@
     </None>
     <None Include="res\shaders\VertexShader.shader" />
     <None Include="res\shaders\FragmentShader.shader" />
+    <None Include="res\shaders\LineVertexShader.shader" />
+    <None Include="res\shaders\LineFragmentShader.shader" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\textures\plul.jpg">

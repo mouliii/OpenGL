@@ -50,7 +50,6 @@ public:
 	void DrawQuad(const glm::vec2& pos, const glm::vec2& size, const glm::vec4& color);
 	void DrawQuad(const glm::vec2& pos, const glm::vec2& size, const Texture& texture);
 	void DrawQuad(const std::vector<Vec2f>& vertices, const glm::vec4& color);
-	void DrawLine(const std::vector<Vec2f>& points);
 	const RenderStats GetRenderStats() const;
 	void ResetStats();
 	void Clear();

@@ -15,7 +15,6 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 int main(void)
 {
-
     GLFWwindow* window;
     /* Initialize the library */
     if (!glfwInit())
@@ -69,6 +68,7 @@ int main(void)
         // clearing 1280 error imgui ????
     }
 
+    // pointer -> stack
     Game game(window);
 
     

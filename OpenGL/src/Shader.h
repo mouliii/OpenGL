@@ -7,6 +7,7 @@
 #include <fstream>
 #include <unordered_map>
 #include "glm/glm.hpp"
+#include "OrthoCamera.h"
 
 class Shader
 {
@@ -30,4 +31,6 @@ public:
 private:
 	unsigned int id;
 	std::unordered_map<std::string, unsigned int> uniformCache;
+public:
+	OrthoCamera* cam = nullptr;
 };
