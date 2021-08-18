@@ -1,11 +1,12 @@
 #include <glad.h>
 #include <GLFW/glfw3.h>
 #include "glm/glm.hpp"
-#include "imgui/imgui.h"
-#include "imgui/imgui_impl_glfw.h"
-#include "imgui/imgui_impl_opengl3.h"
 
-#include "Game.h"
+#include "VertexArray.h"
+#include "VertexBuffer.h"
+#include "IndexBuffer.h"
+#include "Shader.h"
+#include "OrthoCamera.h"
 
 constexpr int WINDOWWIDTH = 960;
 constexpr int WINDOWHEIGHT = 540;
@@ -15,6 +16,8 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 int main(void)
 {
+    GLenum err;
+
     GLFWwindow* window;
     /* Initialize the library */
     if (!glfwInit())
@@ -44,7 +47,9 @@ int main(void)
         return -1;
     }
     std::cout << glGetString(GL_VERSION) << std::endl;
+
     glEnable(GL_TEXTURE_2D);
+
     glEnable(GL_BLEND);
     //glDisable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -52,58 +57,96 @@ int main(void)
     // on windows resize
     glViewport(0, 0, WINDOWWIDTH, WINDOWHEIGHT);
     // V-Sync
+
     glfwSwapInterval(1);
-
-    //Setup IMGUI
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO(); (void)io;
-    ImGui::StyleColorsDark();
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
-    ImGui_ImplOpenGL3_Init((char*)glGetString(GL_NUM_SHADING_LANGUAGE_VERSIONS));
-
-    GLenum err;
     while ((err = glGetError()) != GL_NO_ERROR)
     {
-        // clearing 1280 error imgui ????
+        //std::cout << "err pre verts:  " << err << std::endl;
     }
 
-    // pointer -> stack
-    Game game(window);
-
-    
-    // error check
     while ((err = glGetError()) != GL_NO_ERROR)
     {
-        std::cout << "OpenGL warning/error - pre loop: " << err << std::endl;
+        std::cout << "clear imgui error ?:  " << err << std::endl;
     }
+    //////////////////////////////////////////////////////
+    Vertex vertData[] =
+    {
+        Vec3f(Vec2f(100.f, 100.f), 0.0f), glm::vec4(1.f, 1.f, 1.f, 1.f), Vec2f(0.0f, 0.0f),
+        Vec3f(Vec2f(100.f, 150.f), 0.0f), glm::vec4(1.f, 1.f, 1.f, 1.f), Vec2f(1.0f, 0.0f),
+        Vec3f(Vec2f(150.f, 150.f), 0.0f), glm::vec4(1.f, 1.f, 1.f, 1.f), Vec2f(1.0f, 1.0f),
+        Vec3f(Vec2f(100.f, 150.f), 0.0f), glm::vec4(1.f, 1.f, 1.f, 1.f), Vec2f(0.0f, 1.0f)
+    };
+
+    std::vector<Vertex> vertices;
+    vertices.push_back(vertData[0]);
+    vertices.push_back(vertData[1]);
+    vertices.push_back(vertData[2]);
+    vertices.push_back(vertData[3]);
+    //vertices.emplace_back(Vec3f(Vec2f(100.f, 100.f), 0.0f), glm::vec4(1.f, 1.f, 1.f, 1.f), Vec2f(0.0f, 0.0f));
+    //vertices.emplace_back(Vec3f(Vec2f(100.f, 150.f), 0.0f), glm::vec4(1.f, 1.f, 1.f, 1.f), Vec2f(1.0f, 0.0f));
+    //vertices.emplace_back(Vec3f(Vec2f(150.f, 150.f), 0.0f), glm::vec4(1.f, 1.f, 1.f, 1.f), Vec2f(1.0f, 1.0f));
+    //vertices.emplace_back(Vec3f(Vec2f(100.f, 150.f), 0.0f), glm::vec4(1.f, 1.f, 1.f, 1.f), Vec2f(0.0f, 1.0f));
+
+    std::vector<unsigned int> indices = {0,1,2,0,2,3};
+    //////////////////////////////////////////////////////
+    VertexArray vao;
+    VertexBuffer vbo(vertices);
+    IndexBuffer ibo(indices);
+    Shader shader("res/shaders/QuadVertex.shader", "res/shaders/QuadFragment.shader");
+
+    vao.Bind();
+    while ((err = glGetError()) != GL_NO_ERROR)
+    {
+        std::cout << "err :  " << err << std::endl;
+    }
+    vbo.Bind();
+    while ((err = glGetError()) != GL_NO_ERROR)
+    {
+        std::cout << "err :  " << err << std::endl;
+    }
+    ibo.Bind();
+    while ((err = glGetError()) != GL_NO_ERROR)
+    {
+        std::cout << "err :  " << err << std::endl;
+    }
+    vao.LinkAttribute(vbo, 0, 3, GL_FLOAT, sizeof(Vertex), (GLvoid*)offsetof(Vertex, pos));
+    vao.LinkAttribute(vbo, 1, 4, GL_FLOAT, sizeof(Vertex), (GLvoid*)offsetof(Vertex, color));
+    vao.LinkAttribute(vbo, 2, 2, GL_FLOAT, sizeof(Vertex), (GLvoid*)offsetof(Vertex, texCoord));
+
+    while ((err = glGetError()) != GL_NO_ERROR)
+    {
+        std::cout << "err " << err << std::endl;
+    }
+
+    OrthoCamera camera(0,WINDOWWIDTH,0,WINDOWHEIGHT);
    
-    // glDraw
+    
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
+        glClearColor(0.07f, 0.13f, 0.18f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
         /* Poll for and process events */
         glfwPollEvents();
 
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
-        
-        game.Run();
-        
-        ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        shader.Bind();
+        glm::mat4 viewProj = camera.GetViewProjectionMatrix();
+        shader.SetUniform4fv("uViewProj", viewProj);
+        vao.Bind();
+
+        glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+        while ((err = glGetError()) != GL_NO_ERROR)
+        {
+            std::cout << "err " << err << std::endl;
+        }
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
     }
 
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
 
     glfwTerminate();
     return 0;
