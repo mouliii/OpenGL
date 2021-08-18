@@ -49,7 +49,6 @@ int main(void)
     std::cout << glGetString(GL_VERSION) << std::endl;
 
     glEnable(GL_TEXTURE_2D);
-
     glEnable(GL_BLEND);
     //glDisable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -71,10 +70,10 @@ int main(void)
     //////////////////////////////////////////////////////
     Vertex vertData[] =
     {
-        Vec3f(Vec2f(100.f, 100.f), 0.0f), glm::vec4(1.f, 1.f, 1.f, 1.f), Vec2f(0.0f, 0.0f),
-        Vec3f(Vec2f(100.f, 150.f), 0.0f), glm::vec4(1.f, 1.f, 1.f, 1.f), Vec2f(1.0f, 0.0f),
-        Vec3f(Vec2f(150.f, 150.f), 0.0f), glm::vec4(1.f, 1.f, 1.f, 1.f), Vec2f(1.0f, 1.0f),
-        Vec3f(Vec2f(100.f, 150.f), 0.0f), glm::vec4(1.f, 1.f, 1.f, 1.f), Vec2f(0.0f, 1.0f)
+        Vec3f(Vec2f(100.f, 100.f), 0.0f), glm::vec4(1.f, 0.f, 0.f, 1.f), Vec2f(0.0f, 0.0f),
+        Vec3f(Vec2f(150.f, 100.f), 0.0f), glm::vec4(0.f, 1.f, 0.f, 1.f), Vec2f(1.0f, 0.0f),
+        Vec3f(Vec2f(150.f, 150.f), 0.0f), glm::vec4(0.f, 0.f, 1.f, 1.f), Vec2f(1.0f, 1.0f),
+        Vec3f(Vec2f(100.f, 150.f), 0.0f), glm::vec4(0.f, 0.f, 1.f, 1.f), Vec2f(0.0f, 1.0f)
     };
 
     std::vector<Vertex> vertices;
@@ -82,12 +81,9 @@ int main(void)
     vertices.push_back(vertData[1]);
     vertices.push_back(vertData[2]);
     vertices.push_back(vertData[3]);
-    //vertices.emplace_back(Vec3f(Vec2f(100.f, 100.f), 0.0f), glm::vec4(1.f, 1.f, 1.f, 1.f), Vec2f(0.0f, 0.0f));
-    //vertices.emplace_back(Vec3f(Vec2f(100.f, 150.f), 0.0f), glm::vec4(1.f, 1.f, 1.f, 1.f), Vec2f(1.0f, 0.0f));
-    //vertices.emplace_back(Vec3f(Vec2f(150.f, 150.f), 0.0f), glm::vec4(1.f, 1.f, 1.f, 1.f), Vec2f(1.0f, 1.0f));
-    //vertices.emplace_back(Vec3f(Vec2f(100.f, 150.f), 0.0f), glm::vec4(1.f, 1.f, 1.f, 1.f), Vec2f(0.0f, 1.0f));
 
-    std::vector<unsigned int> indices = {0,1,2,0,2,3};
+    std::vector<unsigned int> indices = {0u,1u,2u,0u,2u,3u};
+
     //////////////////////////////////////////////////////
     VertexArray vao;
     VertexBuffer vbo(vertices);
@@ -95,32 +91,19 @@ int main(void)
     Shader shader("res/shaders/QuadVertex.shader", "res/shaders/QuadFragment.shader");
 
     vao.Bind();
-    while ((err = glGetError()) != GL_NO_ERROR)
-    {
-        std::cout << "err :  " << err << std::endl;
-    }
     vbo.Bind();
-    while ((err = glGetError()) != GL_NO_ERROR)
-    {
-        std::cout << "err :  " << err << std::endl;
-    }
     ibo.Bind();
-    while ((err = glGetError()) != GL_NO_ERROR)
-    {
-        std::cout << "err :  " << err << std::endl;
-    }
+
     vao.LinkAttribute(vbo, 0, 3, GL_FLOAT, sizeof(Vertex), (GLvoid*)offsetof(Vertex, pos));
     vao.LinkAttribute(vbo, 1, 4, GL_FLOAT, sizeof(Vertex), (GLvoid*)offsetof(Vertex, color));
     vao.LinkAttribute(vbo, 2, 2, GL_FLOAT, sizeof(Vertex), (GLvoid*)offsetof(Vertex, texCoord));
 
-    while ((err = glGetError()) != GL_NO_ERROR)
-    {
-        std::cout << "err " << err << std::endl;
-    }
+    vao.Unbind();
+    vbo.Unbind();
+    ibo.Unbind();
 
     OrthoCamera camera(0,WINDOWWIDTH,0,WINDOWHEIGHT);
    
-    
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
@@ -137,7 +120,8 @@ int main(void)
         shader.SetUniform4fv("uViewProj", viewProj);
         vao.Bind();
 
-        glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_LINE_LOOP, indices.size(), GL_UNSIGNED_INT, 0);
+
         while ((err = glGetError()) != GL_NO_ERROR)
         {
             std::cout << "err " << err << std::endl;

@@ -10,7 +10,7 @@ out vec2 vTexCoord;
 uniform mat4 uViewProj;
 
 void main() {
-	gl_Position = uViewProj * vec4(aPos.xyz, 1.0f);
+	gl_Position = uViewProj * vec4(aPos, 1.0f);
 	vColor = aColor;
 	vTexCoord = texCoord;
 }
