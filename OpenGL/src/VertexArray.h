@@ -11,9 +11,9 @@ public:
 	VertexArray(const VertexArray& vb) = delete;
 	VertexArray& operator=(const VertexArray& vb) = delete;
 	~VertexArray();
-	void LinkAttribute(const VertexBuffer& vbo, unsigned int location, unsigned int numComponents, GLenum type, unsigned int stride, GLvoid* offset);
+	void LinkAttribute(const VertexBuffer& vbo, uint32_t location, uint32_t numComponents, GLenum type, uint32_t stride, GLvoid* offset);
 	void Bind()const;
 	void Unbind()const;
 public:
-	unsigned int id;
+	uint32_t id;
 };

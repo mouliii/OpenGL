@@ -13,9 +13,9 @@ public:
 	VertexBuffer(const VertexBuffer& vb) = delete;
 	VertexBuffer& operator=(const VertexBuffer& vb) = delete;
 	~VertexBuffer();
-	void SetData(const Vertex vertData[]);
+	void SetData(const std::vector<Vertex>& data);
 	void Bind()const;
 	void Unbind()const;
 public:
-	unsigned int id;
+	uint32_t id;
 };

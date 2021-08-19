@@ -159,6 +159,7 @@
     <ClCompile Include="src\OrthoCamera.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="src\QuadRenderer.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\Texture.cpp" />
     <ClCompile Include="src\utils\glm\detail\glm.cpp" />
@@ -173,6 +174,7 @@
     <ClCompile Include="src\VertexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Batch.h" />
     <ClInclude Include="src\Collision.h" />
     <ClInclude Include="src\Game.h" />
     <ClInclude Include="src\IndexBuffer.h" />
@@ -180,7 +182,9 @@
     <ClInclude Include="src\Mat3.h" />
     <ClInclude Include="src\Mat4.h" />
     <ClInclude Include="src\OrthoCamera.h" />
+    <ClInclude Include="src\QuadRenderer.h" />
     <ClInclude Include="src\Rect.h" />
+    <ClInclude Include="src\Renderer.h" />
     <ClInclude Include="src\Shape.h" />
     <ClInclude Include="src\Rectangle.h" />
     <ClInclude Include="src\Texture.h" />

@@ -7,7 +7,6 @@
 #include <fstream>
 #include <unordered_map>
 #include "glm/glm.hpp"
-#include "OrthoCamera.h"
 
 class Shader
 {
