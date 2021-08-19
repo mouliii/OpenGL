@@ -2,22 +2,37 @@
 #include <GLFW/glfw3.h>
 #include "glm/glm.hpp"
 
-#include "VertexArray.h"
-#include "VertexBuffer.h"
-#include "IndexBuffer.h"
-#include "Shader.h"
+#include "QuadRenderer.h"
+#include "Batch.h"
 #include "OrthoCamera.h"
 
 constexpr int WINDOWWIDTH = 960;
 constexpr int WINDOWHEIGHT = 540;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-//void glfwSetMouseButtonCallback(GLFWwindow* window,int a, int b, int c); // todo
+static void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length, const char* message, const void* userParam)
+{
+    switch (severity)
+    {
+    case GL_DEBUG_SEVERITY_HIGH:
+        std::cout << "Opengl high severity message\n" << message << "\n";
+        break;
+    case GL_DEBUG_SEVERITY_MEDIUM:
+        std::cout << "Opengl medium severity message\n" << message << "\n";
+        break;
+    case GL_DEBUG_SEVERITY_LOW:
+        std::cout << "Opengl low severity message\n" << message << "\n";
+        break;
+    case GL_DEBUG_SEVERITY_NOTIFICATION:
+        //std::cout << "Opengl high severity message\n" << message << "\n";
+        break;
+    default:
+        break;
+    }
+}
 
 int main(void)
 {
-    GLenum err;
-
     GLFWwindow* window;
     /* Initialize the library */
     if (!glfwInit())
@@ -46,9 +61,13 @@ int main(void)
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
+    // Enable error callbacks
+    glEnable(GL_DEBUG_OUTPUT);
+    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+    glDebugMessageCallback(glDebugOutput, nullptr);
+
     std::cout << glGetString(GL_VERSION) << std::endl;
 
-    glEnable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);
     //glDisable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -56,17 +75,8 @@ int main(void)
     // on windows resize
     glViewport(0, 0, WINDOWWIDTH, WINDOWHEIGHT);
     // V-Sync
-
     glfwSwapInterval(1);
-    while ((err = glGetError()) != GL_NO_ERROR)
-    {
-        //std::cout << "err pre verts:  " << err << std::endl;
-    }
 
-    while ((err = glGetError()) != GL_NO_ERROR)
-    {
-        std::cout << "clear imgui error ?:  " << err << std::endl;
-    }
     //////////////////////////////////////////////////////
     Vertex vertData[] =
     {
@@ -75,34 +85,17 @@ int main(void)
         Vec3f(Vec2f(150.f, 150.f), 0.0f), glm::vec4(0.f, 0.f, 1.f, 1.f), Vec2f(1.0f, 1.0f),
         Vec3f(Vec2f(100.f, 150.f), 0.0f), glm::vec4(0.f, 0.f, 1.f, 1.f), Vec2f(0.0f, 1.0f)
     };
-
-    std::vector<Vertex> vertices;
-    vertices.push_back(vertData[0]);
-    vertices.push_back(vertData[1]);
-    vertices.push_back(vertData[2]);
-    vertices.push_back(vertData[3]);
-
+    std::vector<Vertex> vertices(vertData, vertData + sizeof(vertData) / sizeof(Vertex));
     std::vector<unsigned int> indices = {0u,1u,2u,0u,2u,3u};
 
-    //////////////////////////////////////////////////////
-    VertexArray vao;
-    VertexBuffer vbo(vertices);
-    IndexBuffer ibo(indices);
+
+    QuadRenderer r(vertices, indices);
     Shader shader("res/shaders/QuadVertex.shader", "res/shaders/QuadFragment.shader");
 
-    vao.Bind();
-    vbo.Bind();
-    ibo.Bind();
-
-    vao.LinkAttribute(vbo, 0, 3, GL_FLOAT, sizeof(Vertex), (GLvoid*)offsetof(Vertex, pos));
-    vao.LinkAttribute(vbo, 1, 4, GL_FLOAT, sizeof(Vertex), (GLvoid*)offsetof(Vertex, color));
-    vao.LinkAttribute(vbo, 2, 2, GL_FLOAT, sizeof(Vertex), (GLvoid*)offsetof(Vertex, texCoord));
-
-    vao.Unbind();
-    vbo.Unbind();
-    ibo.Unbind();
 
     OrthoCamera camera(0,WINDOWWIDTH,0,WINDOWHEIGHT);
+    Batch batch(GL_TRIANGLES, "toimi", shader, 1000);
+    batch.Add();
    
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -115,17 +108,8 @@ int main(void)
         /* Poll for and process events */
         glfwPollEvents();
 
-        shader.Bind();
-        glm::mat4 viewProj = camera.GetViewProjectionMatrix();
-        shader.SetUniform4fv("uViewProj", viewProj);
-        vao.Bind();
-
-        glDrawElements(GL_LINE_LOOP, indices.size(), GL_UNSIGNED_INT, 0);
-
-        while ((err = glGetError()) != GL_NO_ERROR)
-        {
-            std::cout << "err " << err << std::endl;
-        }
+        r.Draw(camera);
+        batch.Draw(&shader, camera);
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);

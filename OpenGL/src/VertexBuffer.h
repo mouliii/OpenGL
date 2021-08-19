@@ -8,12 +8,13 @@
 class VertexBuffer
 {
 public:
-	VertexBuffer() = default;
+	VertexBuffer();
 	VertexBuffer(const std::vector<Vertex>& data);
 	VertexBuffer(const VertexBuffer& vb) = delete;
 	VertexBuffer& operator=(const VertexBuffer& vb) = delete;
 	~VertexBuffer();
-	void SetData(const std::vector<Vertex>& data);
+	void SetData(uint32_t size, const void* data);
+	void SetSubData(const std::vector<Vertex>& data);
 	void Bind()const;
 	void Unbind()const;
 public:

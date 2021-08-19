@@ -6,7 +6,7 @@
 class IndexBuffer
 {
 public:
-	IndexBuffer() = default;
+	IndexBuffer();
 	IndexBuffer(const std::vector<unsigned int>& indices);
 	IndexBuffer(const IndexBuffer& vb) = delete;
 	IndexBuffer& operator=(const IndexBuffer& vb) = delete;

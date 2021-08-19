@@ -6,26 +6,22 @@
 #include "VertexArray.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
+#include "Shader.h"
+#include "OrthoCamera.h"
 
-// ei vielä käytössä
-struct BatchConfig
-{
-	GLenum mode;
-	//uint32_t layer = 0;
-	//uint32_t textureId = 0;
-	// matrix ? attribute vai uniform
-}
-
-// modeen oma struct?enum
-// laita index bufferi manuaalisesi batch size
+#include "Vec2.h"
+#include "Vec3.h"
+#include "glm/glm.hpp"
 
 class Batch
 {
 public:
-	Batch(GLenum drawMode, std::string batchName, const std::vector<Vertex>& vertices);
-	void Draw();
-	void Add(const std::vector<Vertex>& vertices);
-	void Update();
+	Batch(GLenum drawMode, std::string batchName, Shader shader, uint32_t maxQuadCount = 1000);
+	void Draw(Shader* shader, const OrthoCamera& cam);
+	void Add();
+	void Remove();
+	void Update(Vec2f pos, glm::vec4 color);
+	void SetSubData();
 private:
 	std::string name;
 	std::vector<Vertex> vertices;
@@ -34,9 +30,12 @@ private:
 	VertexArray vao;
 	VertexBuffer vbo;
 	IndexBuffer ibo;
+	Shader shader;
 
 public:
+	uint32_t maxQuadCount;
 	uint32_t maxNumVertices;
-	uint32_t usedNumVertices;
-	int drawMode; // glenum ? uint?
+	uint32_t maxNumIndices;
+	uint32_t curQuad = 0u;
+	GLenum drawMode; // glenum ? uint?
 };
