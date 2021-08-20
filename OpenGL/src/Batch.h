@@ -16,13 +16,14 @@
 class Batch
 {
 public:
-	Batch(GLenum drawMode, std::string batchName, Shader shader, uint32_t maxQuadCount = 1000);
+	Batch(GLenum drawMode, std::string batchName, Shader shader, uint32_t maxQuadCount = 10000);
 	void BeginFrame();
 	void Draw(Shader* shader, const OrthoCamera& cam);
 	void Add(uint32_t count);
 	void Remove();
 	void Update(const std::vector<Vertex>& vertices);
 	void SetSubData();
+	void SetSubData(uint32_t offset, uint32_t count, const std::vector<Vertex>& data);
 private:
 	std::string name;
 	std::vector<Vertex> vertices;
@@ -31,7 +32,7 @@ private:
 	VertexArray vao;
 	VertexBuffer vbo;
 	IndexBuffer ibo;
-	Shader shader;
+	//Shader shader; todo
 
 public:
 	uint32_t maxQuadCount;
@@ -39,4 +40,6 @@ public:
 	uint32_t maxNumIndices;
 	uint32_t curVertex = 0;
 	GLenum drawMode; // glenum ? uint?
+
+	uint32_t numOfDrawCalls = 0;
 };

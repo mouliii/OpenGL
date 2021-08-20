@@ -1,6 +1,9 @@
 #include <glad.h>
 #include <GLFW/glfw3.h>
 #include "glm/glm.hpp"
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_glfw.h"
+#include "imgui/imgui_impl_opengl3.h"
 
 #include "QuadRenderer.h"
 #include "Batch.h"
@@ -76,7 +79,16 @@ int main(void)
     // on windows resize
     glViewport(0, 0, WINDOWWIDTH, WINDOWHEIGHT);
     // V-Sync
-    glfwSwapInterval(1);
+    glfwSwapInterval(0);
+
+    //////////////////////////////////////////////////////
+    //Setup IMGUI
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    ImGui::StyleColorsDark();
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init((char*)glGetString(GL_NUM_SHADING_LANGUAGE_VERSIONS));
 
     //////////////////////////////////////////////////////
     Vertex vertData[] =
@@ -89,27 +101,27 @@ int main(void)
     std::vector<Vertex> vertices(vertData, vertData + sizeof(vertData) / sizeof(Vertex));
     std::vector<unsigned int> indices = {0u,1u,2u,0u,2u,3u};
 
-
     QuadRenderer r(vertices, indices);
     Shader shader("res/shaders/QuadVertex.shader", "res/shaders/QuadFragment.shader");
 
-
     OrthoCamera camera(0,WINDOWWIDTH,0,WINDOWHEIGHT);
-    Batch batch(GL_TRIANGLES, "toimi", shader, 1000);
+    Batch batch(GL_TRIANGLES, "toimi", shader, 30000);
     
     std::vector<Rect> rects;
-    for (size_t i = 100; i < 800; i+= 60)
+    for (size_t x = 10; x < 950; x+=5)
     {
-        for (size_t j = 100; j < 500; j+= 55)
+        for (size_t y = 10; y < 540; y+=5)
         {
-            rects.emplace_back(Rect(Vec2f(float(i),float(j)), Vec2f(10.f,10.f), glm::vec4(1.0f,0.5f,0.3f,1.0f), &batch));
+            rects.emplace_back(Rect(Vec2f(float(x),float(y)), Vec2f(2.f,2.f), glm::vec4(1.0f,0.5f,0.3f,1.0f), &batch));
         }
     }
     batch.Add(rects.size());
+    std::cout << "rects koko: " << rects.size() * sizeof(Vertex) << "\n";
 
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
+    bool yep = true;
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
@@ -125,10 +137,30 @@ int main(void)
         }
         batch.Draw(&shader, camera);
 
+
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
+        ImGui::Begin("Hello, world!");                          
+        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+        ImGui::Text("number of rects: %d", rects.size());
+        ImGui::Text("Draw calls: %d", batch.numOfDrawCalls);
+        ImGui::End();
+
+        // Rendering
+        ImGui::Render();
+        //int display_w, display_h;
+        //glfwGetFramebufferSize(window, &display_w, &display_h);
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
     }
 
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
 
     glfwTerminate();
     return 0;

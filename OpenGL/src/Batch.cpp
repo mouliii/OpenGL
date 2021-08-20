@@ -6,7 +6,7 @@ Batch::Batch(GLenum drawMode, std::string batchName, Shader shader, uint32_t max
 	vao(),vbo(),ibo()
 {
 	uint32_t offset = 0;
-	for (size_t i = 0; i < maxQuadCount; i+= 6)
+	for (size_t i = 0; i < maxNumIndices; i++)
 	{
 		// triangle 1
 		indices.emplace_back(offset + 0);
@@ -37,17 +37,51 @@ Batch::Batch(GLenum drawMode, std::string batchName, Shader shader, uint32_t max
 void Batch::BeginFrame()
 {
 	curVertex = 0;
+	numOfDrawCalls = 0;
 }
 
 void Batch::Draw(Shader* shader, const OrthoCamera& cam)
 {
-	SetSubData();
 	shader->Bind();
 	glm::mat4 viewProj = cam.GetViewProjectionMatrix();
 	shader->SetUniform4fv("uViewProj", viewProj);
 	vao.Bind();
-	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+
+	uint32_t leftToDraw = vertices.size();
+	uint32_t vertPointer = 0;
+	while (leftToDraw >= maxNumVertices)
+	{
+		vbo.SetSubData(0, maxNumVertices, &vertices[vertPointer]);
+		glDrawElements(drawMode, indices.size(), GL_UNSIGNED_INT, 0);
+		leftToDraw -= maxNumVertices;
+		vertPointer += maxNumVertices;
+		numOfDrawCalls++;
+	}
+	vbo.SetSubData(0, leftToDraw, &vertices[vertPointer]);
+	glDrawElements(drawMode, indices.size(), GL_UNSIGNED_INT, 0);
 	vao.Unbind();
+
+	numOfDrawCalls++;
+}
+
+
+void Batch::Update(const std::vector<Vertex>& vertices)
+{
+	this->vertices[curVertex] = vertices[0];
+	this->vertices[curVertex+1] = vertices[1];
+	this->vertices[curVertex+2] = vertices[2];
+	this->vertices[curVertex+3] = vertices[3];
+	curVertex += 4;
+}
+
+void Batch::SetSubData()
+{
+	vbo.SetSubData(vertices);
+}
+
+void Batch::SetSubData(uint32_t offset, uint32_t count, const std::vector<Vertex>& data)
+{
+	//vbo.SetSubData(offset, count, data);
 }
 
 void Batch::Add(uint32_t count)
@@ -64,19 +98,4 @@ void Batch::Add(uint32_t count)
 void Batch::Remove()
 {
 	vertices.pop_back();
-}
-
-void Batch::Update(const std::vector<Vertex>& vertices)
-{
-	this->vertices[curVertex] = vertices[0];
-	this->vertices[curVertex+1] = vertices[1];
-	this->vertices[curVertex+2] = vertices[2];
-	this->vertices[curVertex+3] = vertices[3];
-	curVertex += 4;
-	// if curQuad > maxQuads -> flush
-}
-
-void Batch::SetSubData()
-{
-	vbo.SetSubData(vertices);
 }
