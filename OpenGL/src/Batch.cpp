@@ -31,10 +31,17 @@ Batch::Batch(GLenum drawMode, std::string batchName, Shader shader, uint32_t max
 	vao.Unbind();
 	vbo.Unbind();
 	ibo.Unbind();
+
+}
+
+void Batch::BeginFrame()
+{
+	curVertex = 0;
 }
 
 void Batch::Draw(Shader* shader, const OrthoCamera& cam)
 {
+	SetSubData();
 	shader->Bind();
 	glm::mat4 viewProj = cam.GetViewProjectionMatrix();
 	shader->SetUniform4fv("uViewProj", viewProj);
@@ -43,9 +50,15 @@ void Batch::Draw(Shader* shader, const OrthoCamera& cam)
 	vao.Unbind();
 }
 
-void Batch::Add()
+void Batch::Add(uint32_t count)
 {
-	vertices.push_back({ Vec3f(Vec2f(), 0.0f), glm::vec4(), Vec2f() });
+	for (size_t i = 0; i < count; i++)
+	{
+		for (size_t k = 0; k < 4; k++)
+		{
+			vertices.push_back({ Vec3f(Vec2f(), 0.0f), glm::vec4(), Vec2f() });
+		}
+	}
 }
 
 void Batch::Remove()
@@ -53,12 +66,13 @@ void Batch::Remove()
 	vertices.pop_back();
 }
 
-void Batch::Update(Vec2f pos, glm::vec4 color)
+void Batch::Update(const std::vector<Vertex>& vertices)
 {
-	vertices[curQuad].pos = Vec3f(pos, 0.0f);
-	vertices[curQuad].color = color;
-	//vertices[curQuad].texCoord
-	curQuad++;
+	this->vertices[curVertex] = vertices[0];
+	this->vertices[curVertex+1] = vertices[1];
+	this->vertices[curVertex+2] = vertices[2];
+	this->vertices[curVertex+3] = vertices[3];
+	curVertex += 4;
 	// if curQuad > maxQuads -> flush
 }
 

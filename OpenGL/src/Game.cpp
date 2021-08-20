@@ -6,7 +6,7 @@ Game::Game(GLFWwindow* window)
     window(window),
     camera(0.0f, windowWidth, 0.0f, windowHeight)
 {
-    Rect rect(Vec2f(300.f, 300.f), Vec2f(50.f, 50.f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+    //Rect rect(Vec2f(300.f, 300.f), Vec2f(50.f, 50.f));
 }
 
 Game::~Game()

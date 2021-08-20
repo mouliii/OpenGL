@@ -17,10 +17,11 @@ class Batch
 {
 public:
 	Batch(GLenum drawMode, std::string batchName, Shader shader, uint32_t maxQuadCount = 1000);
+	void BeginFrame();
 	void Draw(Shader* shader, const OrthoCamera& cam);
-	void Add();
+	void Add(uint32_t count);
 	void Remove();
-	void Update(Vec2f pos, glm::vec4 color);
+	void Update(const std::vector<Vertex>& vertices);
 	void SetSubData();
 private:
 	std::string name;
@@ -36,6 +37,6 @@ public:
 	uint32_t maxQuadCount;
 	uint32_t maxNumVertices;
 	uint32_t maxNumIndices;
-	uint32_t curQuad = 0u;
+	uint32_t curVertex = 0;
 	GLenum drawMode; // glenum ? uint?
 };

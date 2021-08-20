@@ -5,6 +5,7 @@
 #include "QuadRenderer.h"
 #include "Batch.h"
 #include "OrthoCamera.h"
+#include "Rect.h"
 
 constexpr int WINDOWWIDTH = 960;
 constexpr int WINDOWHEIGHT = 540;
@@ -95,8 +96,17 @@ int main(void)
 
     OrthoCamera camera(0,WINDOWWIDTH,0,WINDOWHEIGHT);
     Batch batch(GL_TRIANGLES, "toimi", shader, 1000);
-    batch.Add();
-   
+    
+    std::vector<Rect> rects;
+    for (size_t i = 100; i < 800; i+= 60)
+    {
+        for (size_t j = 100; j < 500; j+= 55)
+        {
+            rects.emplace_back(Rect(Vec2f(float(i),float(j)), Vec2f(10.f,10.f), glm::vec4(1.0f,0.5f,0.3f,1.0f), &batch));
+        }
+    }
+    batch.Add(rects.size());
+
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
@@ -108,7 +118,11 @@ int main(void)
         /* Poll for and process events */
         glfwPollEvents();
 
-        r.Draw(camera);
+        batch.BeginFrame();
+        for (size_t i = 0; i < rects.size(); i++)
+        {
+            rects[i].Draw();
+        }
         batch.Draw(&shader, camera);
 
         /* Swap front and back buffers */
