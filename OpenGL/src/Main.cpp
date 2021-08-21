@@ -6,6 +6,7 @@
 #include "imgui/imgui_impl_opengl3.h"
 
 #include "QuadRenderer.h"
+#include "Primitives.h"
 #include "Batch.h"
 #include "OrthoCamera.h"
 #include "Rect.h"
@@ -79,7 +80,7 @@ int main(void)
     // on windows resize
     glViewport(0, 0, WINDOWWIDTH, WINDOWHEIGHT);
     // V-Sync
-    glfwSwapInterval(0);
+    glfwSwapInterval(1);
 
     //////////////////////////////////////////////////////
     //Setup IMGUI
@@ -103,20 +104,21 @@ int main(void)
 
     QuadRenderer r(vertices, indices);
     Shader shader("res/shaders/QuadVertex.shader", "res/shaders/QuadFragment.shader");
-
     OrthoCamera camera(0,WINDOWWIDTH,0,WINDOWHEIGHT);
-    Batch batch(GL_TRIANGLES, "toimi", shader, 30000);
     
     std::vector<Rect> rects;
+    std::vector<Quad> quads;
     for (size_t x = 10; x < 950; x+=5)
     {
         for (size_t y = 10; y < 540; y+=5)
         {
-            rects.emplace_back(Rect(Vec2f(float(x),float(y)), Vec2f(2.f,2.f), glm::vec4(1.0f,0.5f,0.3f,1.0f), &batch));
+            quads.emplace_back(Quad(Vec2f(float(x), float(y)), Vec2f(2.f, 2.f), glm::vec4(1.0f, 0.5f, 0.3f, 1.0f)));
+            //rects.emplace_back(Rect(Vec2f(float(x),float(y)), Vec2f(2.f,2.f), glm::vec4(1.0f,0.5f,0.3f,1.0f), &batch));
         }
     }
-    batch.Add(rects.size());
-    std::cout << "rects koko: " << rects.size() * sizeof(Vertex) << "\n";
+    Batch batch(GL_TRIANGLES, "toimi", shader, Quad(), 15000);
+    batch.Add(Quad(), quads.size());
+    //std::cout << "rects koko: " << rects.size() * sizeof(Vertex) << "\n";
 
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -131,9 +133,10 @@ int main(void)
         glfwPollEvents();
 
         batch.BeginFrame();
-        for (size_t i = 0; i < rects.size(); i++)
+        for (size_t i = 0; i < quads.size(); i++)
         {
-            rects[i].Draw();
+            batch.Update(quads[i]);
+            //rects[i].Draw();
         }
         batch.Draw(&shader, camera);
 

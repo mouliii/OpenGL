@@ -36,7 +36,7 @@ public:
 		//globalVertices[2] += Vec2f(pos.x, pos.y);
 		//globalVertices[3] += Vec2f(pos.x, pos.y);
 
-		batch->Update(vertices);
+		//batch->Update(vertices);
 	}
 
 
