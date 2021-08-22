@@ -65,3 +65,23 @@ public:
 	}
 private:
 };
+
+class Line : public Primitive
+{
+public:
+	Line(Vec2f from, Vec2f to, glm::vec4 color)
+		:Primitive()
+	{
+		vertices.reserve(2);
+		vertices.push_back({Vec3f(from, 0.0f), color, Vec2f(0.0f, 0.0f)});
+		vertices.push_back({Vec3f(to, 0.0f), color, Vec2f(0.0f, 0.0f)});
+		indices = { 0,1 };
+	}
+	Line(std::vector<Vec2f> points)
+		:Primitive()
+	{
+		//vertices = std::move(points);
+	}
+private:
+
+};

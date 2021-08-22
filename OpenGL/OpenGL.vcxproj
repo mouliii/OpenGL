@@ -179,7 +179,6 @@
     <ClInclude Include="src\Collision.h" />
     <ClInclude Include="src\Game.h" />
     <ClInclude Include="src\IndexBuffer.h" />
-    <ClInclude Include="src\Line.h" />
     <ClInclude Include="src\Mat3.h" />
     <ClInclude Include="src\Mat4.h" />
     <ClInclude Include="src\OrthoCamera.h" />
@@ -529,12 +528,10 @@
     <ClInclude Include="src\VertexData.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\shaders\FragmentShader.shader" />
-    <None Include="res\shaders\LineFragmentShader.shader" />
-    <None Include="res\shaders\LineVertexShader.shader" />
-    <None Include="res\shaders\QuadFragment.shader" />
-    <None Include="res\shaders\QuadVertex.shader" />
-    <None Include="res\shaders\VertexShader.shader" />
+    <None Include="res\shaders\FragmentShader_old.shader" />
+    <None Include="res\shaders\DefaultFragment.shader" />
+    <None Include="res\shaders\DefaultVertex.shader" />
+    <None Include="res\shaders\VertexShader_old.shader" />
     <None Include="src\utils\glm\detail\func_common.inl" />
     <None Include="src\utils\glm\detail\func_common_simd.inl" />
     <None Include="src\utils\glm\detail\func_exponential.inl" />

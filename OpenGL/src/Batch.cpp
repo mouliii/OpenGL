@@ -30,15 +30,11 @@ Batch::Batch(GLenum drawMode, std::string batchName, Shader shader, Primitive pr
 	ibo.Unbind();
 }
 
-void Batch::BeginFrame()
-{
-	// siirrä draw?
-	curVertex = 0;
-	numOfDrawCalls = 0;
-}
-
 void Batch::Draw(Shader* shader, const OrthoCamera& cam)
 {
+	curVertex = 0;
+	numOfDrawCalls = 0;
+
 	shader->Bind();
 	glm::mat4 viewProj = cam.GetViewProjectionMatrix();
 	shader->SetUniform4fv("uViewProj", viewProj);
@@ -55,6 +51,7 @@ void Batch::Draw(Shader* shader, const OrthoCamera& cam)
 		numOfDrawCalls++;
 	}
 	SetSubData(0, leftToDraw, &vertices[vertPointer]);
+	SetSubData(leftToDraw, maxNumVertices - leftToDraw, nullptr);
 	glDrawElements(drawMode, indices.size(), GL_UNSIGNED_INT, 0);
 	vao.Unbind();
 

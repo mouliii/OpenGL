@@ -1124,9 +1124,6 @@
     <ClInclude Include="src\Collision.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Line.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\VertexArray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1561,12 +1558,10 @@
     <None Include="src\utils\glm\gtx\wrap.inl">
       <Filter>Header Files</Filter>
     </None>
-    <None Include="res\shaders\VertexShader.shader" />
-    <None Include="res\shaders\FragmentShader.shader" />
-    <None Include="res\shaders\LineVertexShader.shader" />
-    <None Include="res\shaders\LineFragmentShader.shader" />
-    <None Include="res\shaders\QuadVertex.shader" />
-    <None Include="res\shaders\QuadFragment.shader" />
+    <None Include="res\shaders\VertexShader_old.shader" />
+    <None Include="res\shaders\FragmentShader_old.shader" />
+    <None Include="res\shaders\DefaultVertex.shader" />
+    <None Include="res\shaders\DefaultFragment.shader" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\textures\plul.jpg">

@@ -71,7 +71,7 @@ int main(void)
     glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
     glDebugMessageCallback(glDebugOutput, nullptr);
 
-    std::cout << glGetString(GL_VERSION) << std::endl;
+    std::cout << "OpenGL version " << glGetString(GL_VERSION) << std::endl;
 
     glEnable(GL_BLEND);
     //glDisable(GL_BLEND);
@@ -80,9 +80,8 @@ int main(void)
     // on windows resize
     glViewport(0, 0, WINDOWWIDTH, WINDOWHEIGHT);
     // V-Sync
-    glfwSwapInterval(1);
+    glfwSwapInterval(0);
 
-    //////////////////////////////////////////////////////
     //Setup IMGUI
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -91,34 +90,39 @@ int main(void)
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init((char*)glGetString(GL_NUM_SHADING_LANGUAGE_VERSIONS));
 
-    //////////////////////////////////////////////////////
-    Vertex vertData[] =
-    {
-        Vec3f(Vec2f(100.f, 100.f), 0.0f), glm::vec4(1.f, 0.f, 0.f, 1.f), Vec2f(0.0f, 0.0f),
-        Vec3f(Vec2f(150.f, 100.f), 0.0f), glm::vec4(0.f, 1.f, 0.f, 1.f), Vec2f(1.0f, 0.0f),
-        Vec3f(Vec2f(150.f, 150.f), 0.0f), glm::vec4(0.f, 0.f, 1.f, 1.f), Vec2f(1.0f, 1.0f),
-        Vec3f(Vec2f(100.f, 150.f), 0.0f), glm::vec4(0.f, 0.f, 1.f, 1.f), Vec2f(0.0f, 1.0f)
-    };
-    std::vector<Vertex> vertices(vertData, vertData + sizeof(vertData) / sizeof(Vertex));
-    std::vector<unsigned int> indices = {0u,1u,2u,0u,2u,3u};
 
-    QuadRenderer r(vertices, indices);
-    Shader shader("res/shaders/QuadVertex.shader", "res/shaders/QuadFragment.shader");
+    Shader shader("res/shaders/DefaultVertex.shader", "res/shaders/DefaultFragment.shader");
     OrthoCamera camera(0,WINDOWWIDTH,0,WINDOWHEIGHT);
     
-    std::vector<Rect> rects;
     std::vector<Quad> quads;
+    std::vector<Triangle> tris;
+    std::vector<Line> lines;
+
+    lines.emplace_back(Vec2f(0.0f, 0.0f), Vec2f(900.f, 500.f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+    lines.emplace_back(Vec2f(0.0f, 540.0f), Vec2f(925, 0.f), glm::vec4(0.0f, 1.0f, 0.4f, 1.0f));
+    lines.emplace_back(Vec2f(300.0f, 230.0f), Vec2f(600, 230.f), glm::vec4(0.3f, 0.9f, 0.9f, 1.0f));
+
+    int insertTri = 0;
     for (size_t x = 10; x < 950; x+=5)
     {
         for (size_t y = 10; y < 540; y+=5)
         {
-            quads.emplace_back(Quad(Vec2f(float(x), float(y)), Vec2f(2.f, 2.f), glm::vec4(1.0f, 0.5f, 0.3f, 1.0f)));
-            //rects.emplace_back(Rect(Vec2f(float(x),float(y)), Vec2f(2.f,2.f), glm::vec4(1.0f,0.5f,0.3f,1.0f), &batch));
+            if ( insertTri % 1 == 0)
+                quads.emplace_back(Quad(Vec2f(float(x), float(y)), Vec2f(2.f, 2.f), glm::vec4(1.0f, 0.5f, 0.3f, 0.4f)));
+            if (insertTri % 20 == 0)
+            {
+                tris.emplace_back(Triangle(Vec2f(float(x), float(y)), Vec2f(6.f, 6.f), glm::vec4(0.05f, 0.5f, 1.0f, 0.75f)));
+            }
+            insertTri += 1;
         }
     }
-    Batch batch(GL_TRIANGLES, "toimi", shader, Quad(), 15000);
-    batch.Add(Quad(), quads.size());
-    //std::cout << "rects koko: " << rects.size() * sizeof(Vertex) << "\n";
+
+    Batch quadBatch(GL_TRIANGLES, "quads", shader, quads[0]);
+    quadBatch.Add(Quad(), quads.size());
+    Batch triangleBatch(GL_TRIANGLES, "triangles", shader, tris[0], 20000);
+    triangleBatch.Add(tris[0], tris.size());
+    Batch lineBatch(GL_LINES, "lines", shader, lines[0], 10);
+    lineBatch.Add(lines[0], lines.size());
 
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -132,13 +136,21 @@ int main(void)
         /* Poll for and process events */
         glfwPollEvents();
 
-        batch.BeginFrame();
         for (size_t i = 0; i < quads.size(); i++)
         {
-            batch.Update(quads[i]);
-            //rects[i].Draw();
+            quadBatch.Update(quads[i]);
         }
-        batch.Draw(&shader, camera);
+        for (size_t i = 0; i < tris.size(); i++)
+        {
+            triangleBatch.Update(tris[i]);
+        }
+        for (size_t i = 0; i < lines.size(); i++)
+        {
+            lineBatch.Update(lines[i]);
+        }
+        quadBatch.Draw(&shader, camera);
+        triangleBatch.Draw(&shader, camera);
+        lineBatch.Draw(&shader, camera);
 
 
         ImGui_ImplOpenGL3_NewFrame();
@@ -147,8 +159,8 @@ int main(void)
 
         ImGui::Begin("Hello, world!");                          
         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-        ImGui::Text("number of rects: %d", rects.size());
-        ImGui::Text("Draw calls: %d", batch.numOfDrawCalls);
+        ImGui::Text("number of rects: %d", quads.size());
+        ImGui::Text("Draw calls: %d", quadBatch.numOfDrawCalls);
         ImGui::End();
 
         // Rendering

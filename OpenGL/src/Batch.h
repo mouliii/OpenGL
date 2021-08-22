@@ -18,7 +18,6 @@ class Batch
 {
 public:
 	Batch(GLenum drawMode, std::string batchName, Shader shader, Primitive primitive, uint32_t maxBatchCount = 10000);
-	void BeginFrame();
 	void Draw(Shader* shader, const OrthoCamera& cam);
 	void Add(Primitive primitive, uint32_t count);
 	void Remove();
