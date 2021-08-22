@@ -61,7 +61,7 @@ Renderer::Renderer()
 	GLenum err;
 	while ((err = glGetError()) != GL_NO_ERROR)
 	{
-		std::cout << "OpenGL warning/error at renderer: " << err << std::endl;
+		std::cout << "OpenGL warning/error at renderer constructor: " << err << std::endl;
 	}
 }
 

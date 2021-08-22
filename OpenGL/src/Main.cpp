@@ -5,17 +5,39 @@
 #include "imgui/imgui_impl_glfw.h"
 #include "imgui/imgui_impl_opengl3.h"
 
-#include "Game.h"
+#include "QuadRenderer.h"
+#include "Primitives.h"
+#include "Batch.h"
+#include "OrthoCamera.h"
+#include "Rect.h"
 
 constexpr int WINDOWWIDTH = 960;
 constexpr int WINDOWHEIGHT = 540;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-//void glfwSetMouseButtonCallback(GLFWwindow* window,int a, int b, int c); // todo
+static void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length, const char* message, const void* userParam)
+{
+    switch (severity)
+    {
+    case GL_DEBUG_SEVERITY_HIGH:
+        std::cout << "Opengl high severity message\n" << message << "\n";
+        break;
+    case GL_DEBUG_SEVERITY_MEDIUM:
+        std::cout << "Opengl medium severity message\n" << message << "\n";
+        break;
+    case GL_DEBUG_SEVERITY_LOW:
+        std::cout << "Opengl low severity message\n" << message << "\n";
+        break;
+    case GL_DEBUG_SEVERITY_NOTIFICATION:
+        //std::cout << "Opengl high severity message\n" << message << "\n";
+        break;
+    default:
+        break;
+    }
+}
 
 int main(void)
 {
-
     GLFWwindow* window;
     /* Initialize the library */
     if (!glfwInit())
@@ -44,8 +66,13 @@ int main(void)
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
-    std::cout << glGetString(GL_VERSION) << std::endl;
-    glEnable(GL_TEXTURE_2D);
+    // Enable error callbacks
+    glEnable(GL_DEBUG_OUTPUT);
+    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+    glDebugMessageCallback(glDebugOutput, nullptr);
+
+    std::cout << "OpenGL version " << glGetString(GL_VERSION) << std::endl;
+
     glEnable(GL_BLEND);
     //glDisable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -53,7 +80,7 @@ int main(void)
     // on windows resize
     glViewport(0, 0, WINDOWWIDTH, WINDOWHEIGHT);
     // V-Sync
-    glfwSwapInterval(1);
+    glfwSwapInterval(0);
 
     //Setup IMGUI
     IMGUI_CHECKVERSION();
@@ -63,38 +90,83 @@ int main(void)
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init((char*)glGetString(GL_NUM_SHADING_LANGUAGE_VERSIONS));
 
-    GLenum err;
-    while ((err = glGetError()) != GL_NO_ERROR)
-    {
-        // clearing 1280 error imgui ????
-    }
 
-    Game game(window);
-
+    Shader shader("res/shaders/DefaultVertex.shader", "res/shaders/DefaultFragment.shader");
+    OrthoCamera camera(0,WINDOWWIDTH,0,WINDOWHEIGHT);
     
-    // error check
-    while ((err = glGetError()) != GL_NO_ERROR)
+    std::vector<Quad> quads;
+    std::vector<Triangle> tris;
+    std::vector<Line> lines;
+
+    lines.emplace_back(Vec2f(0.0f, 0.0f), Vec2f(900.f, 500.f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+    lines.emplace_back(Vec2f(0.0f, 540.0f), Vec2f(925, 0.f), glm::vec4(0.0f, 1.0f, 0.4f, 1.0f));
+    lines.emplace_back(Vec2f(300.0f, 230.0f), Vec2f(600, 230.f), glm::vec4(0.3f, 0.9f, 0.9f, 1.0f));
+
+    int insertTri = 0;
+    for (size_t x = 10; x < 950; x+=5)
     {
-        std::cout << "OpenGL warning/error - pre loop: " << err << std::endl;
+        for (size_t y = 10; y < 540; y+=5)
+        {
+            if ( insertTri % 1 == 0)
+                quads.emplace_back(Quad(Vec2f(float(x), float(y)), Vec2f(2.f, 2.f), glm::vec4(1.0f, 0.5f, 0.3f, 0.4f)));
+            if (insertTri % 20 == 0)
+            {
+                tris.emplace_back(Triangle(Vec2f(float(x), float(y)), Vec2f(6.f, 6.f), glm::vec4(0.05f, 0.5f, 1.0f, 0.75f)));
+            }
+            insertTri += 1;
+        }
     }
-   
-    // glDraw
+
+    Batch quadBatch(GL_TRIANGLES, "quads", shader, quads[0]);
+    quadBatch.Add(Quad(), quads.size());
+    Batch triangleBatch(GL_TRIANGLES, "triangles", shader, tris[0], 20000);
+    triangleBatch.Add(tris[0], tris.size());
+    Batch lineBatch(GL_LINES, "lines", shader, lines[0], 10);
+    lineBatch.Add(lines[0], lines.size());
+
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
+    bool yep = true;
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
+        glClearColor(0.07f, 0.13f, 0.18f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
         /* Poll for and process events */
         glfwPollEvents();
+
+        for (size_t i = 0; i < quads.size(); i++)
+        {
+            quadBatch.Update(quads[i]);
+        }
+        for (size_t i = 0; i < tris.size(); i++)
+        {
+            triangleBatch.Update(tris[i]);
+        }
+        for (size_t i = 0; i < lines.size(); i++)
+        {
+            lineBatch.Update(lines[i]);
+        }
+        quadBatch.Draw(&shader, camera);
+        triangleBatch.Draw(&shader, camera);
+        lineBatch.Draw(&shader, camera);
+
 
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-        
-        game.Run();
-        
+
+        ImGui::Begin("Hello, world!");                          
+        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+        ImGui::Text("number of rects: %d", quads.size());
+        ImGui::Text("Draw calls: %d", quadBatch.numOfDrawCalls);
+        ImGui::End();
+
+        // Rendering
         ImGui::Render();
+        //int display_w, display_h;
+        //glfwGetFramebufferSize(window, &display_w, &display_h);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
         /* Swap front and back buffers */

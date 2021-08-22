@@ -1,5 +1,5 @@
 #pragma once
-
+#include "Vec2.h"
 #include <cmath>
 
 template <typename T>
@@ -19,6 +19,12 @@ public:
 		x((T)src.x),
 		y((T)src.y),
 		z((T)src.z)
+	{}
+	template <typename S>
+	Vec3(const Vec2<S> src, T z)
+		:
+		x(src.x), y(src.y),
+		z(z)
 	{}
 	Vec3 operator+(const Vec3& rhs) const
 	{

@@ -22,6 +22,10 @@ public:
 	{
 		return Vec2(x + rhs.x, y + rhs.y);
 	}
+	friend Vec2 operator+(const Vec2& lhs, const T rhs)
+	{
+		return Vec2(lhs.x + rhs, lhs.y + rhs);
+	}
 	Vec2& operator+=(const Vec2& rhs)
 	{
 		return *this = *this + rhs;
@@ -29,6 +33,10 @@ public:
 	Vec2 operator-(const Vec2& rhs) const
 	{
 		return Vec2(x - rhs.x, y - rhs.y);
+	}
+	friend Vec2 operator-(const Vec2& lhs, const T rhs)
+	{
+		return Vec2(lhs.x - rhs, lhs.y - rhs);
 	}
 	Vec2& operator-=(const Vec2& rhs)
 	{
