@@ -2,7 +2,7 @@
 
 Batch::Batch(GLenum drawMode, std::string batchName, Shader shader, Primitive primitive, uint32_t maxBatchCount)
 	:
-	drawMode(drawMode), name(batchName),
+	drawMode(drawMode), name(batchName), primitive(primitive),
 	maxBatchCount(maxBatchCount), maxNumVertices(maxBatchCount* primitive.GetVertices().size()), maxNumIndices(maxBatchCount* primitive.GetIndexCount()),
 	vao(),vbo(),ibo()
 {
@@ -42,6 +42,7 @@ void Batch::Draw(Shader* shader, const OrthoCamera& cam)
 
 	uint32_t leftToDraw = vertices.size();
 	uint32_t vertPointer = 0;
+
 	while (leftToDraw >= maxNumVertices)
 	{
 		SetSubData(0, maxNumVertices, &vertices[vertPointer]);
@@ -50,9 +51,12 @@ void Batch::Draw(Shader* shader, const OrthoCamera& cam)
 		vertPointer += maxNumVertices;
 		numOfDrawCalls++;
 	}
-	SetSubData(0, leftToDraw, &vertices[vertPointer]);
-	SetSubData(leftToDraw, maxNumVertices - leftToDraw, nullptr);
-	glDrawElements(drawMode, indices.size(), GL_UNSIGNED_INT, 0);
+	if (leftToDraw != 0)
+	{
+		SetSubData(leftToDraw, maxNumVertices - leftToDraw, nullptr);
+		SetSubData(0, leftToDraw, &vertices[vertPointer]);
+		glDrawElements(drawMode, leftToDraw / primitive.GetVertexCount() * primitive.GetIndexCount(), GL_UNSIGNED_INT, 0);
+	}
 	vao.Unbind();
 
 	numOfDrawCalls++;
@@ -73,16 +77,16 @@ void Batch::SetSubData()
 	vbo.SetSubData(vertices);
 }
 
-void Batch::SetSubData(uint32_t offset, uint32_t count, const void* data)
+void Batch::SetSubData(uint32_t offsetCount, uint32_t count, const void* data)
 {
-	vbo.SetSubData(offset, count, data);
+	vbo.SetSubData(offsetCount, count, data);
 }
 
-void Batch::Add(Primitive primitive, uint32_t count)
+void Batch::Add(uint32_t count)
 {
 	for (size_t i = 0; i < count; i++)
 	{
-		for (size_t k = 0; k < primitive.GetVertices().size(); k++)
+		for (size_t k = 0; k < primitive.GetVertexCount(); k++)
 		{
 			vertices.push_back({ Vec3f(Vec2f(), 0.0f), glm::vec4(), Vec2f() });
 		}

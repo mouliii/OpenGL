@@ -19,16 +19,16 @@ class Batch
 public:
 	Batch(GLenum drawMode, std::string batchName, Shader shader, Primitive primitive, uint32_t maxBatchCount = 10000);
 	void Draw(Shader* shader, const OrthoCamera& cam);
-	void Add(Primitive primitive, uint32_t count);
+	void Add(uint32_t count);
 	void Remove();
 	void Update(const Primitive& primitive);
 	void SetSubData();
-	void SetSubData(uint32_t offset, uint32_t count, const void* data);
+	void SetSubData(uint32_t offsetCount, uint32_t count, const void* data);
 private:
 	std::string name;
 	std::vector<Vertex> vertices;
 	std::vector<uint32_t> indices;
-
+	Primitive primitive;
 	VertexArray vao;
 	VertexBuffer vbo;
 	IndexBuffer ibo;

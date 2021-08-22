@@ -13,15 +13,12 @@ public:
 	virtual ~Primitive(){}
 	const std::vector<uint32_t>& GetIndices() const { return indices; }
 	const std::vector<Vertex>& GetVertices() const { return vertices; }
-	const uint32_t GetVertexCount() const { return vertices.size() * sizeof(uint32_t) / sizeof(Vertex); } // bugaa
+	const uint32_t GetVertexCount() const { return vertices.size(); }
 	const uint32_t GetIndexCount() const { return indices.size(); }
 protected:
 	std::vector<Vertex> vertices;
 	std::vector<uint32_t> indices;
 };
-
-
-// batch ottaa primitiven
 
 class Quad : public Primitive
 {

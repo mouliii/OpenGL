@@ -9,3 +9,8 @@ struct Vertex
 	glm::vec4 color;
 	Vec2f texCoord;
 };
+
+struct Tectureasd
+{
+
+};
