@@ -5,7 +5,7 @@
 #include "imgui/imgui_impl_glfw.h"
 #include "imgui/imgui_impl_opengl3.h"
 
-#include "QuadRenderer.h"
+#include "Renderer.h"
 #include "Primitives.h"
 #include "Batch.h"
 #include "OrthoCamera.h"
@@ -93,14 +93,17 @@ int main(void)
 
     Shader shader("res/shaders/DefaultVertex.shader", "res/shaders/DefaultFragment.shader");
     OrthoCamera camera(0,WINDOWWIDTH,0,WINDOWHEIGHT);
+    Renderer renderer;
     
     std::vector<Quad> quads;
     std::vector<Triangle> tris;
     std::vector<Line> lines;
 
-    lines.emplace_back(Vec2f(0.0f, 0.0f), Vec2f(900.f, 500.f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-    lines.emplace_back(Vec2f(0.0f, 540.0f), Vec2f(925, 0.f), glm::vec4(0.0f, 1.0f, 0.4f, 1.0f));
-    lines.emplace_back(Vec2f(300.0f, 230.0f), Vec2f(600, 230.f), glm::vec4(0.3f, 0.9f, 0.9f, 1.0f));
+    lines.emplace_back(Vec2f(0.0f, 0.0f), Vec2f(900.f, 500.f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 2);
+    lines.emplace_back(Vec2f(0.0f, 540.0f), Vec2f(925, 0.f), glm::vec4(0.0f, 1.0f, 0.4f, 1.0f), 1);
+    lines.emplace_back(Vec2f(300.0f, 230.0f), Vec2f(600, 230.f), glm::vec4(0.3f, 0.9f, 0.9f, 1.0f), 5);
+    std::vector<Vec2f> pline{Vec2f(200.f,100.f), Vec2f(600.f,100.f), Vec2f(400.f, 500.f)};
+    lines.emplace_back(pline, glm::vec4(1.0f,1.0f,1.0f,1.0f), 3, true);
 
     int insertTri = 0;
     for (size_t x = 10; x < 950; x+=5)
@@ -111,7 +114,7 @@ int main(void)
             //    quads.emplace_back(Quad(Vec2f(float(x), float(y)), Vec2f(2.f, 2.f), glm::vec4(1.0f, 0.5f, 0.3f, 0.4f)));
             if (insertTri % 20 == 0)
             {
-                tris.emplace_back(Vec2f(float(x), float(y)), Vec2f(6.f, 6.f), glm::vec4(0.05f, 1.0f, 0.3f, 0.3f));
+                tris.emplace_back(Vec2f(float(x), float(y)), Vec2f(6.f, 6.f), glm::vec4(0.05f, 1.0f, 0.3f, 0.5f));
             }
             insertTri += 1;
         }
@@ -124,12 +127,14 @@ int main(void)
         }
     }
     //                                            30k -> 4.6 MB | max 4
-    Batch quadBatch(GL_TRIANGLES, "quads", shader, quads[0]);
-    quadBatch.Add(quads.size());
-    Batch triangleBatch(GL_TRIANGLES, "triangles", shader, tris[0]);
-    triangleBatch.Add(tris.size());
-    Batch lineBatch(GL_LINES, "lines", shader, lines[0], 10);
-    lineBatch.Add(lines.size());
+    Batch quadBatch(GL_FILL, "quads", shader, quads[0]);
+    quadBatch.Add(quads.size(), quads[0]);
+    Batch triangleBatch(GL_LINE, "triangles", shader, tris[0]);
+    triangleBatch.Add(tris.size(), tris[0]);
+    Batch lineBatch(GL_FILL, "lines", shader, lines[0], 100);
+    // eri kokoiset linet pit‰‰ laittaa erikseen
+    lineBatch.Add(lines.size()-1, lines[0]);
+    lineBatch.Add(1, lines.back());
 
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -159,6 +164,8 @@ int main(void)
         triangleBatch.Draw(&shader, camera);
         lineBatch.Draw(&shader, camera);
 
+        renderer.Draw(Quad(Vec2f(70.f, 400.f), Vec2f(20.f, 20.f), glm::vec4(1.0f, 0.0f, 0.2f, 1.0f)), camera);
+        renderer.Draw(Quad(Vec2f(500.f, 400.f), Vec2f(20.f, 20.f), glm::vec4(1.0f, 0.0f, 0.2f, 1.0f)), camera);
 
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();

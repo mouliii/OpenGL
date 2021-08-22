@@ -42,11 +42,11 @@ void Batch::Draw(Shader* shader, const OrthoCamera& cam)
 
 	uint32_t leftToDraw = vertices.size();
 	uint32_t vertPointer = 0;
-
+	glPolygonMode(GL_FRONT_AND_BACK, drawMode);
 	while (leftToDraw >= maxNumVertices)
 	{
 		SetSubData(0, maxNumVertices, &vertices[vertPointer]);
-		glDrawElements(drawMode, indices.size(), GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 		leftToDraw -= maxNumVertices;
 		vertPointer += maxNumVertices;
 		numOfDrawCalls++;
@@ -55,7 +55,7 @@ void Batch::Draw(Shader* shader, const OrthoCamera& cam)
 	{
 		SetSubData(leftToDraw, maxNumVertices - leftToDraw, nullptr);
 		SetSubData(0, leftToDraw, &vertices[vertPointer]);
-		glDrawElements(drawMode, leftToDraw / primitive.GetVertexCount() * primitive.GetIndexCount(), GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, leftToDraw / primitive.GetVertexCount() * primitive.GetIndexCount(), GL_UNSIGNED_INT, 0);
 	}
 	vao.Unbind();
 
@@ -82,7 +82,7 @@ void Batch::SetSubData(uint32_t offsetCount, uint32_t count, const void* data)
 	vbo.SetSubData(offsetCount, count, data);
 }
 
-void Batch::Add(uint32_t count)
+void Batch::Add(uint32_t count, const Primitive& primitive)
 {
 	for (size_t i = 0; i < count; i++)
 	{
@@ -93,48 +93,8 @@ void Batch::Add(uint32_t count)
 	}
 }
 
+// ei toiminnasssa atm
 void Batch::Remove()
 {
 	vertices.pop_back();
 }
-
-
-
-
-/*
-Batch::Batch(GLenum drawMode, std::string batchName, Shader shader, Primitive primitive, uint32_t maxQuadCount)
-	:
-	drawMode(drawMode), name(batchName), maxQuadCount(maxQuadCount), maxNumVertices(maxQuadCount * 4), maxNumIndices(maxQuadCount * 6),
-	vao(),vbo(),ibo()
-{
-	uint32_t offset = 0;
-	for (size_t i = 0; i < maxNumIndices; i++)
-	{
-		// triangle 1
-		indices.emplace_back(offset + 0);
-		indices.emplace_back(offset + 1);
-		indices.emplace_back(offset + 2);
-		// triangle 2
-		indices.emplace_back(offset + 2);
-		indices.emplace_back(offset + 3);
-		indices.emplace_back(offset + 0);
-		offset += 4;
-	}
-	vao.Bind();
-	vbo.Bind();
-	vbo.SetData(maxNumVertices * sizeof(Vertex), nullptr);
-	ibo.Bind();
-	ibo.SetData(indices);
-
-	vao.LinkAttribute(vbo, 0, 3, GL_FLOAT, sizeof(Vertex), (GLvoid*)offsetof(Vertex, pos));
-	vao.LinkAttribute(vbo, 1, 4, GL_FLOAT, sizeof(Vertex), (GLvoid*)offsetof(Vertex, color));
-	vao.LinkAttribute(vbo, 2, 2, GL_FLOAT, sizeof(Vertex), (GLvoid*)offsetof(Vertex, texCoord));
-
-	vao.Unbind();
-	vbo.Unbind();
-	ibo.Unbind();
-
-	// testi vain
-	//priv = Quad(Vec2f(0.0f,0.0f),Vec2f(0.0f,0.0f),glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-}
-*/

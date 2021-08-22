@@ -17,9 +17,10 @@
 class Batch
 {
 public:
+	// GL_FILL, GL_LINE
 	Batch(GLenum drawMode, std::string batchName, Shader shader, Primitive primitive, uint32_t maxBatchCount = 10000);
 	void Draw(Shader* shader, const OrthoCamera& cam);
-	void Add(uint32_t count);
+	void Add(uint32_t count, const Primitive& primitive);
 	void Remove();
 	void Update(const Primitive& primitive);
 	void SetSubData();

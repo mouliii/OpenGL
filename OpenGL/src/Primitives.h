@@ -66,18 +66,50 @@ private:
 class Line : public Primitive
 {
 public:
-	Line(Vec2f from, Vec2f to, glm::vec4 color)
+	Line(Vec2f from, Vec2f to, glm::vec4 color, uint32_t size)
 		:Primitive()
 	{
-		vertices.reserve(2);
-		vertices.push_back({Vec3f(from, 0.0f), color, Vec2f(0.0f, 0.0f)});
-		vertices.push_back({Vec3f(to, 0.0f), color, Vec2f(0.0f, 0.0f)});
-		indices = { 0,1 };
+		vertices.reserve(4);
+		vertices.push_back({ Vec3f(Vec2f(from.x, from.y - size), 0.0f), color, Vec2f(0.0f, 0.0f) });
+		vertices.push_back({ Vec3f(Vec2f(to.x, to.y - size), 0.0f), color, Vec2f(1.0f, 0.0f) });
+		vertices.push_back({ Vec3f(Vec2f(to.x, to.y + size), 0.0f), color, Vec2f(1.0f, 1.0f) });
+		vertices.push_back({ Vec3f(Vec2f(from.x, from.y + size), 0.0f), color, Vec2f(0.0f, 1.0f) });
+		indices = { 0,1,2, 2,3,0 };
 	}
-	Line(std::vector<Vec2f> points)
+	Line(std::vector<Vec2f> points, glm::vec4 color, uint32_t size, bool closeLine = false)
 		:Primitive()
 	{
-		//vertices = std::move(points);
+		for (size_t i = 0; i < points.size() - 1; i++)
+		{
+			vertices.push_back({ Vec3f(Vec2f(points[i].x, points[i].y - size), 0.0f), color, Vec2f(0.0f, 0.0f) });
+			vertices.push_back({ Vec3f(Vec2f(points[i + 1].x, points[i + 1].y - size), 0.0f), color, Vec2f(1.0f, 0.0f) });
+			vertices.push_back({ Vec3f(Vec2f(points[i + 1].x, points[i + 1].y + size), 0.0f), color, Vec2f(1.0f, 1.0f) });
+			vertices.push_back({ Vec3f(Vec2f(points[i].x, points[i].y + size), 0.0f), color, Vec2f(0.0f, 1.0f) });
+		}
+		int offset = 0;
+		for (size_t i = 0; i < points.size() - 1; i++)
+		{
+			indices.push_back(offset + 0);
+			indices.push_back(offset + 1);
+			indices.push_back(offset + 2);
+			indices.push_back(offset + 2);
+			indices.push_back(offset + 3);
+			indices.push_back(offset + 0);
+			offset += 4;
+		}
+		if (closeLine)
+		{
+			vertices.push_back({ Vec3f(Vec2f(points.back().x, points.back().y - size), 0.0f), color, Vec2f(0.0f, 0.0f) });
+			vertices.push_back({ Vec3f(Vec2f(points.front().x, points.front().y - size), 0.0f), color, Vec2f(1.0f, 0.0f) });
+			vertices.push_back({ Vec3f(Vec2f(points.front().x, points.front().y + size), 0.0f), color, Vec2f(1.0f, 1.0f) });
+			vertices.push_back({ Vec3f(Vec2f(points.back().x, points.back().y + size), 0.0f), color, Vec2f(0.0f, 1.0f) });
+			indices.push_back(offset + 0);
+			indices.push_back(offset + 1);
+			indices.push_back(offset + 2);
+			indices.push_back(offset + 2);
+			indices.push_back(offset + 3);
+			indices.push_back(offset + 0);
+		}
 	}
 private:
 
