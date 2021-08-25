@@ -2,7 +2,7 @@
 
 Batch::Batch(GLenum drawMode, std::string batchName, Shader shader, Primitive primitive, uint32_t maxBatchCount)
 	:
-	drawMode(drawMode), name(batchName), primitive(primitive),
+	drawMode(drawMode), name(batchName), primitive(primitive), shader(shader),
 	maxBatchCount(maxBatchCount), maxNumVertices(maxBatchCount* primitive.GetVertices().size()), maxNumIndices(maxBatchCount* primitive.GetIndexCount()),
 	vao(),vbo(),ibo()
 {
@@ -30,14 +30,19 @@ Batch::Batch(GLenum drawMode, std::string batchName, Shader shader, Primitive pr
 	ibo.Unbind();
 }
 
-void Batch::Draw(Shader* shader, const OrthoCamera& cam)
+void Batch::Draw(const OrthoCamera& cam)
 {
 	curVertex = 0;
 	numOfDrawCalls = 0;
 
-	shader->Bind();
+	shader.Bind();
 	glm::mat4 viewProj = cam.GetViewProjectionMatrix();
-	shader->SetUniform4fv("uViewProj", viewProj);
+	shader.SetUniform4fv("uViewProj", viewProj);
+	shader.SetUniform1f("textureIndex", 0);
+	// todo
+	auto id = TextureManager::GetTexture("res/textures/white1x1.png");
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, *id);
 	vao.Bind();
 
 	uint32_t leftToDraw = vertices.size();
@@ -56,10 +61,9 @@ void Batch::Draw(Shader* shader, const OrthoCamera& cam)
 		SetSubData(leftToDraw, maxNumVertices - leftToDraw, nullptr);
 		SetSubData(0, leftToDraw, &vertices[vertPointer]);
 		glDrawElements(GL_TRIANGLES, leftToDraw / primitive.GetVertexCount() * primitive.GetIndexCount(), GL_UNSIGNED_INT, 0);
+		numOfDrawCalls++;
 	}
 	vao.Unbind();
-
-	numOfDrawCalls++;
 }
 
 

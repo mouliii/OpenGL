@@ -191,6 +191,7 @@
     <ClInclude Include="src\Rectangle.h" />
     <ClInclude Include="src\Texture.h" />
     <ClInclude Include="src\Shader.h" />
+    <ClInclude Include="src\TextureManager.h" />
     <ClInclude Include="src\utils\box2d\b2_api.h" />
     <ClInclude Include="src\utils\box2d\b2_block_allocator.h" />
     <ClInclude Include="src\utils\box2d\b2_body.h" />
@@ -529,10 +530,10 @@
     <ClInclude Include="src\VertexData.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\shaders\FragmentShader_old.shader" />
+    <None Include="res\shaders\DefaultBatchFragment.shader" />
     <None Include="res\shaders\DefaultFragment.shader" />
     <None Include="res\shaders\DefaultVertex.shader" />
-    <None Include="res\shaders\VertexShader_old.shader" />
+    <None Include="res\shaders\DefaultBatchVertex.shader" />
     <None Include="src\utils\glm\detail\func_common.inl" />
     <None Include="src\utils\glm\detail\func_common_simd.inl" />
     <None Include="src\utils\glm\detail\func_exponential.inl" />

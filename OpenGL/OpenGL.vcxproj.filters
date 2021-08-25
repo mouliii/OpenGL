@@ -1151,6 +1151,9 @@
     <ClInclude Include="src\Primitives.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\TextureManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\utils\glm\detail\func_common.inl">
@@ -1561,8 +1564,8 @@
     <None Include="src\utils\glm\gtx\wrap.inl">
       <Filter>Header Files</Filter>
     </None>
-    <None Include="res\shaders\VertexShader_old.shader" />
-    <None Include="res\shaders\FragmentShader_old.shader" />
+    <None Include="res\shaders\DefaultBatchVertex.shader" />
+    <None Include="res\shaders\DefaultBatchFragment.shader" />
     <None Include="res\shaders\DefaultVertex.shader" />
     <None Include="res\shaders\DefaultFragment.shader" />
   </ItemGroup>

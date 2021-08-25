@@ -3,11 +3,9 @@
 Texture::Texture(const std::string& filepath, GLenum type)
 {
     stbi_set_flip_vertically_on_load(1);
-    //data = std::make_unique<unsigned char>(stbi_load(filepath.c_str(), &width, &height, &nChannels, 0));
     stbi_uc* data = stbi_load(filepath.c_str(), &width, &height, &nChannels, 0);
     if (data)
     {
-        
         glGenTextures(1, &id);
         glBindTexture(type, id);
 
@@ -44,7 +42,7 @@ Texture::~Texture()
 
 void Texture::Bind() const
 {
-    //glBindTextureUnit(slot, id); TOIMII VAIN GL 4.5 + !!!!!!!
+    //glBindTextureUnit(slot, id); TOIMII VAIN GL 4.5 + !
     glBindTexture(type, id);
 }
 

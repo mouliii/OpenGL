@@ -6,7 +6,7 @@
 #include <iostream>
 #include "stb/stb_image.h"
 
-// TODO mipmaps
+// todo
 // subregion
 // texture manager
 

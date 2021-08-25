@@ -9,6 +9,7 @@
 #include "Shader.h"
 #include "OrthoCamera.h"
 #include "Primitives.h"
+#include "TextureManager.h"
 
 #include "Vec2.h"
 #include "Vec3.h"
@@ -19,7 +20,7 @@ class Batch
 public:
 	// GL_FILL, GL_LINE
 	Batch(GLenum drawMode, std::string batchName, Shader shader, Primitive primitive, uint32_t maxBatchCount = 10000);
-	void Draw(Shader* shader, const OrthoCamera& cam);
+	void Draw(const OrthoCamera& cam);
 	void Add(uint32_t count, const Primitive& primitive);
 	void Remove();
 	void Update(const Primitive& primitive);
@@ -33,7 +34,7 @@ private:
 	VertexArray vao;
 	VertexBuffer vbo;
 	IndexBuffer ibo;
-	//Shader shader; todo
+	Shader shader;
 
 public:
 	uint32_t maxBatchCount;

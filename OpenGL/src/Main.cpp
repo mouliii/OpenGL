@@ -10,6 +10,7 @@
 #include "Batch.h"
 #include "OrthoCamera.h"
 #include "Rect.h"
+#include "TextureManager.h"
 
 constexpr int WINDOWWIDTH = 960;
 constexpr int WINDOWHEIGHT = 540;
@@ -88,13 +89,17 @@ int main(void)
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     ImGui::StyleColorsDark();
     ImGui_ImplGlfw_InitForOpenGL(window, true);
-    ImGui_ImplOpenGL3_Init((char*)glGetString(GL_NUM_SHADING_LANGUAGE_VERSIONS));
+    ImGui_ImplOpenGL3_Init("#version 330");
 
 
+    Renderer renderer;
     Shader shader("res/shaders/DefaultVertex.shader", "res/shaders/DefaultFragment.shader");
     OrthoCamera camera(0,WINDOWWIDTH,0,WINDOWHEIGHT);
-    Renderer renderer;
-    
+    Texture texture("res/textures/plul.jpg");
+    //Texture texture("res/textures/white1x1.png");
+    {
+        auto asdTest = TextureManager::GetTexture("res/textures/awesomeface.png");
+    }
     std::vector<Quad> quads;
     std::vector<Triangle> tris;
     std::vector<Line> lines;
@@ -126,12 +131,13 @@ int main(void)
             quads.emplace_back(Vec2f(float(x), float(y)), Vec2f(5.f, 5.f), glm::vec4(1.0f, 0.5f, 0.3f, 0.4f));
         }
     }
+    Shader batchShader("res/shaders/DefaultBatchVertex.shader", "res/shaders/DefaultBatchFragment.shader");
     //                                            30k -> 4.6 MB | max 4
-    Batch quadBatch(GL_FILL, "quads", shader, quads[0]);
+    Batch quadBatch(GL_FILL, "quads", batchShader, quads[0]);
     quadBatch.Add(quads.size(), quads[0]);
-    Batch triangleBatch(GL_LINE, "triangles", shader, tris[0]);
+    Batch triangleBatch(GL_LINE, "triangles", batchShader, tris[0]);
     triangleBatch.Add(tris.size(), tris[0]);
-    Batch lineBatch(GL_FILL, "lines", shader, lines[0], 100);
+    Batch lineBatch(GL_FILL, "lines", batchShader, lines[0], 100);
     // eri kokoiset linet pit‰‰ laittaa erikseen
     lineBatch.Add(lines.size()-1, lines[0]);
     lineBatch.Add(1, lines.back());
@@ -139,7 +145,8 @@ int main(void)
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-    bool yep = true;
+    TextureManager::FreeUnusedTextures();
+    std::shared_ptr<uint32_t> testTex = TextureManager::GetTexture("res/textures/awesomeface.png");
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
@@ -160,12 +167,12 @@ int main(void)
         {
             lineBatch.Update(lines[i]);
         }
-        quadBatch.Draw(&shader, camera);
-        triangleBatch.Draw(&shader, camera);
-        lineBatch.Draw(&shader, camera);
+        quadBatch.Draw(camera);
+        triangleBatch.Draw(camera);
+        lineBatch.Draw(camera);
 
-        renderer.Draw(Quad(Vec2f(70.f, 400.f), Vec2f(20.f, 20.f), glm::vec4(1.0f, 0.0f, 0.2f, 1.0f)), camera);
-        renderer.Draw(Quad(Vec2f(500.f, 400.f), Vec2f(20.f, 20.f), glm::vec4(1.0f, 0.0f, 0.2f, 1.0f)), camera);
+        renderer.Draw(Quad(Vec2f(70.f, 400.f), Vec2f(20.f, 20.f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)), camera, testTex);
+        renderer.Draw(Triangle(Vec2f(700.f, 400.f), Vec2f(30.f, 30.f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)), camera, &texture);
 
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();

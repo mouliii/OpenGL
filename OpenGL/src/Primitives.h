@@ -56,7 +56,7 @@ public:
 		vertices.reserve(4);
 		vertices.push_back({ Vec3f(Vec2f(centerPos.x - halfSize.x, centerPos.y - halfSize.y), 0.0f), color, Vec2f(0.0f, 0.0f) });
 		vertices.push_back({ Vec3f(Vec2f(centerPos.x + halfSize.x, centerPos.y - halfSize.y), 0.0f), color, Vec2f(1.0f, 0.0f) });
-		vertices.push_back({ Vec3f(Vec2f(centerPos.x, centerPos.y + halfSize.y), 0.0f), color, Vec2f(1.0f, 1.0f) });
+		vertices.push_back({ Vec3f(Vec2f(centerPos.x, centerPos.y + halfSize.y), 0.0f), color, Vec2f(0.5f, 1.0f) });
 
 		indices = {0,1,2};
 	}
