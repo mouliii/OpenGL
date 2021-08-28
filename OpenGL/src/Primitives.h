@@ -11,10 +11,17 @@ class Primitive
 public:
 	Primitive(){}
 	virtual ~Primitive(){}
-	const std::vector<uint32_t>& GetIndices() const { return indices; }
-	const std::vector<Vertex>& GetVertices() const { return vertices; }
+	std::vector<uint32_t>& GetIndices() { return indices; }
+	std::vector<Vertex>& GetVertices() { return vertices; }
 	const uint32_t GetVertexCount() const { return vertices.size(); }
 	const uint32_t GetIndexCount() const { return indices.size(); }
+	void SetVertexColor(glm::vec4 color)
+	{
+		for (size_t i = 0; i < vertices.size(); i++)
+		{
+			vertices[i].color = color;
+		}
+	}
 protected:
 	std::vector<Vertex> vertices;
 	std::vector<uint32_t> indices;
@@ -63,6 +70,7 @@ public:
 private:
 };
 
+// ei toim vertikaalisesti
 class Line : public Primitive
 {
 public:

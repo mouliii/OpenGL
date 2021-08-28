@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>
+#include <iostream>
 
 template <typename T>
 class Vec2
@@ -18,6 +19,11 @@ public:
 		x((T)src.x),
 		y((T)src.y)
 	{}
+	friend std::ostream& operator<<(std::ostream& stream, const Vec2& vec)
+	{
+		stream << "( " << vec.x << ", " << vec.y << " )";
+		return stream;
+	}
 	Vec2 operator+(const Vec2& rhs) const
 	{
 		return Vec2(x + rhs.x, y + rhs.y);

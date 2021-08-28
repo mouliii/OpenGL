@@ -43,6 +43,7 @@ void Batch::Draw(const OrthoCamera& cam)
 	auto id = TextureManager::GetTexture("res/textures/white1x1.png");
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, *id);
+	// TÄHÄN TEXTURE ID | päivitä updatessa, vector ?
 	vao.Bind();
 
 	uint32_t leftToDraw = vertices.size();
@@ -64,12 +65,17 @@ void Batch::Draw(const OrthoCamera& cam)
 		numOfDrawCalls++;
 	}
 	vao.Unbind();
+	textureIds.clear();
 }
 
 
-void Batch::Update(const Primitive& primitive)
+void Batch::Update(Primitive& primitive, const std::shared_ptr<uint32_t>& textureId)
 {
-	for (size_t i = 0; i < primitive.GetVertices().size(); i++)
+	if (textureId != nullptr)
+	{
+		textureIds.emplace_back(*textureId);
+	}
+	for (size_t i = 0; i < primitive.GetVertexCount(); i++)
 	{
 		vertices[curVertex] = primitive.GetVertices()[i];
 		curVertex++;

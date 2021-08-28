@@ -10,21 +10,16 @@
 class Rect
 {
 public:
-	Rect(Vec2f centerPos, Vec2f halfSize, glm::vec4 color, Batch* batch)
+	Rect(Vec2f centerPos, Vec2f halfSize, glm::vec4 color, Batch* batch = nullptr)
 		:
-		pos(centerPos), halfSize(halfSize), color(color), batch(batch)
+		pos(centerPos), halfSize(halfSize), color(color), batch(batch),
+		quad(centerPos, halfSize, color)
 	{
 		//localVertices.reserve(4);
 		//localVertices.emplace_back(Vec2f(0 - halfSize.x, 0 - halfSize.y));
 		//localVertices.emplace_back(Vec2f(0 + halfSize.x, 0 - halfSize.y));
 		//localVertices.emplace_back(Vec2f(0 + halfSize.x, 0 + halfSize.y));
 		//localVertices.emplace_back(Vec2f(0 - halfSize.x, 0 + halfSize.y));
-		vertices.reserve(4);
-		vertices.push_back({ Vec3f(Vec2f(centerPos.x - halfSize.x, centerPos.y - halfSize.y), 0.0f), color, Vec2f(0.0f, 0.0f) });
-		vertices.push_back({ Vec3f(Vec2f(centerPos.x + halfSize.x, centerPos.y - halfSize.y), 0.0f), color, Vec2f(1.0f, 0.0f) });
-		vertices.push_back({ Vec3f(Vec2f(centerPos.x + halfSize.x, centerPos.y + halfSize.y), 0.0f), color, Vec2f(1.0f, 1.0f) });
-		vertices.push_back({ Vec3f(Vec2f(centerPos.x - halfSize.x, centerPos.y + halfSize.y), 0.0f), color, Vec2f(0.0f, 1.0f) });
-
 	};
 
 	void Draw()
@@ -38,11 +33,18 @@ public:
 
 		//batch->Update(vertices);
 	}
-
+	void SetVertexPositions()
+	{
+		auto& verts = quad.GetVertices();
+		verts[0].pos = Vec3f(Vec2f(pos.x - halfSize.x, pos.y - halfSize.y), 0.0f);
+		verts[1].pos = Vec3f(Vec2f(pos.x + halfSize.x, pos.y - halfSize.y), 0.0f);
+		verts[2].pos = Vec3f(Vec2f(pos.x + halfSize.x, pos.y + halfSize.y), 0.0f);
+		verts[3].pos = Vec3f(Vec2f(pos.x - halfSize.x, pos.y + halfSize.y), 0.0f);
+	}
 
 public:
 	//std::vector<Vec2f> localVertices;
-	std::vector<Vertex> vertices;
+	Quad quad;
 	Vec2f pos;
 	Vec2f halfSize;
 	glm::vec4 color;

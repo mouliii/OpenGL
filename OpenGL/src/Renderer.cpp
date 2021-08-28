@@ -18,7 +18,6 @@ Renderer::Renderer()
 	vbo.Unbind();
 	ibo.Unbind();
 
-	Texture tex("res/textures/white1x1.png");
 	//// 1x1 white texture
 	//uint32_t wpId;
 	//glCreateTextures(GL_TEXTURE_2D, 1, &wpId);
@@ -31,8 +30,10 @@ Renderer::Renderer()
 	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, &color);
 }
 
-void Renderer::Draw(const Primitive& primitive, const OrthoCamera& cam, const Texture* tex, Shader* shader)
+void Renderer::Draw(Primitive& primitive, const OrthoCamera& cam, const Texture* tex, Shader* shader)
 {
+	// todo fix
+	Texture defTex("res/textures/white1x1.png");
 	if (shader != nullptr)
 	{
 		shader->Bind();
@@ -53,7 +54,7 @@ void Renderer::Draw(const Primitive& primitive, const OrthoCamera& cam, const Te
 	else
 	{
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, 0);
+		glBindTexture(GL_TEXTURE_2D, defTex.GetID());
 	}
 	vao.Bind();
 	vbo.Bind();
@@ -64,7 +65,7 @@ void Renderer::Draw(const Primitive& primitive, const OrthoCamera& cam, const Te
 	vao.Unbind();
 }
 
-void Renderer::Draw(const Primitive& primitive, const OrthoCamera& cam, const std::shared_ptr<uint32_t> tex, Shader* shader)
+void Renderer::Draw( Primitive& primitive, const OrthoCamera& cam, const std::shared_ptr<uint32_t> tex, Shader* shader)
 {
 	if (shader != nullptr)
 	{

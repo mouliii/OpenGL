@@ -9,6 +9,7 @@
 
 #include "Rect.h"
 #include "Collision.h"
+#include "Renderer.h"
 
 /*
 rectangle - cache vertices - bool update_pos
@@ -29,9 +30,14 @@ private:
 	GLFWwindow* window;
 	const float windowWidth = 960;
 	const float windowHeight = 540;
+	Renderer gfx;
 	OrthoCamera camera;
 	Vec2<float> mousePos = { 0.0f,0.0f };
 	float lastFrameTime = 0.0f;
+	float dt = 0.0f;
 
 public:
+	Rect player;
+	float speed = 200.f;
+	Vec2f vel = {200.0f,200.0f};
 };

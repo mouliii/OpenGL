@@ -23,13 +23,14 @@ public:
 	void Draw(const OrthoCamera& cam);
 	void Add(uint32_t count, const Primitive& primitive);
 	void Remove();
-	void Update(const Primitive& primitive);
+	void Update(Primitive& primitive, const std::shared_ptr<uint32_t>& textureId = nullptr);
 	void SetSubData();
 	void SetSubData(uint32_t offsetCount, uint32_t count, const void* data);
 private:
 	std::string name;
 	std::vector<Vertex> vertices;
 	std::vector<uint32_t> indices;
+	std::vector<uint32_t> textureIds;
 	Primitive primitive;
 	VertexArray vao;
 	VertexBuffer vbo;

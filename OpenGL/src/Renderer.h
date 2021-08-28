@@ -23,8 +23,8 @@ class Renderer
 {
 public:
 	Renderer();
-	void Draw(const Primitive& primitive,const OrthoCamera& cam, const Texture* tex = nullptr, Shader* shader = nullptr);
-	void Draw(const Primitive& primitive, const OrthoCamera& cam, const std::shared_ptr<uint32_t> tex, Shader* shader = nullptr);
+	void Draw( Primitive& primitive,const OrthoCamera& cam, const Texture* tex = nullptr, Shader* shader = nullptr);
+	void Draw( Primitive& primitive, const OrthoCamera& cam, const std::shared_ptr<uint32_t> tex, Shader* shader = nullptr);
 private:
 	Primitive primitive;
 	VertexArray vao;
