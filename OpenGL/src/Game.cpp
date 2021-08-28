@@ -6,7 +6,11 @@ Game::Game(GLFWwindow* window)
     camera(0.0f, windowWidth, 0.0f, windowHeight),
     player(Vec2f(300.f, 300.f), Vec2f(20.f, 30.f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f))
 {
-    //Rect rect(Vec2f(300.f, 300.f), Vec2f(50.f, 50.f));
+    for (size_t i = 0; i < 20; i++)
+    {
+        rects.emplace_back(Vec2f(400.f + i*60, 100.f), Vec2f(10.f, 10.f), glm::vec4(0.4f, 0.5f, 0.45f, 1.0f));
+    }
+    rects.emplace_back(Vec2f(400.f + 1 * 60, 150.f), Vec2f(10.f, 10.f), glm::vec4(0.4f, 0.5f, 0.45f, 1.0f));
 }
 
 Game::~Game()
@@ -49,8 +53,6 @@ void Game::Update()
     glfwGetCursorPos(window, &mx, &my);
     my = double(windowHeight) - my;
     mousePos = Vec2f(float(mx), float(my));
-
-    
 }
 
 void Game::Draw()
@@ -84,30 +86,42 @@ void Game::Draw()
     else
         q.quad.SetVertexColor(glm::vec4(0.4f, 0.3f, 0.78f, 1.0f));
 
+    // first pass
+    float tSort = 0;
+    std::vector<std::pair<size_t, float>> z;
+    for (size_t i = 0; i < rects.size(); i++)
+    {
+        
+        // collision distance
+        if (Collision::DynamicRectVsRect(player, vel, rects[i], &cp, &cn, &tSort, dt))
+        {
+            z.push_back({ i,tSort });
+        }
+    }
+    //sort col dist
+    std::sort(z.begin(), z.end(), [](const std::pair<int, float>& a, const std::pair<int, float>& b) { return a.second < b.second;});
+
+
+    // second pass
+    for (auto& j : z)
+    {
+        if (Collision::DynamicRectVsRect(player, vel, rects[j.first], &cp, &cn, &t, dt))
+        {
+            player.pos = cp;
+            float dotProduct = (vel.x * cn.y + vel.y * cn.x) * (1.f - t);
+            vel.x = dotProduct * cn.y;
+            vel.y = dotProduct * cn.x;
+        }
+    }
 
     for (size_t i = 0; i < 2; i++)
     {
-        
         if (Collision::DynamicRectVsRect(player, vel, i == 0 ? q : q2, &cp, &cn, &t, dt))
         {
-            //vel = cn * Vec2f(std::abs(vel.x), std::abs(vel.y)) * (1.0f - t);
-            // std::cout << vel2;
-            //testi
-            std::cout << cp << std::endl;
             player.pos = cp;
-     
-         
-
-         //   player.pos += vel * t;
-         //   float remainingTime = 1.0f - t;
-         //  
-         //   // slide
             float dotProduct = (vel.x * cn.y + vel.y * cn.x) * (1.f - t);
-            
             vel.x = dotProduct * cn.y;
             vel.y = dotProduct * cn.x;
-            
-         
         }
     }
 
@@ -120,6 +134,11 @@ void Game::Draw()
     gfx.Draw(l, camera);
 
     gfx.Draw(q2.quad, camera);
+
+    for (size_t i = 0; i < rects.size(); i++)
+    {
+        gfx.Draw(rects[i].quad, camera);
+    }
 
     ImGui::Begin("Test");
     ImGui::Text("player pos: %.0f, %.0f ", player.pos.x, player.pos.y);

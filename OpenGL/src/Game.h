@@ -40,4 +40,5 @@ public:
 	Rect player;
 	float speed = 200.f;
 	Vec2f vel = {200.0f,200.0f};
+	std::vector<Rect> rects;
 };

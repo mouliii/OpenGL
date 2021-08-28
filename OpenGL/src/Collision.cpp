@@ -43,24 +43,30 @@ bool Collision::RayVsRect(const Vec2f& rayOrigin, const Vec2f& rayDir, const Rec
 
 	if (t_near.x > t_near.y)
 	{
-		if (rayDir.x < 0.0f) { *contactNormal = Vec2f(1.0f, 0.0f); }
-		else { *contactNormal = Vec2f(-1.0f, 0.0f); }
+		if (invDir.x < 0.0f)
+		{ *contactNormal = Vec2f(1.0f, 0.0f); }
+		else
+		{ *contactNormal = Vec2f(-1.0f, 0.0f); }
 	}
 	else if (t_near.x < t_near.y)
 	{
-		if (rayDir.y < 0.0f) { *contactNormal = Vec2f(0.0f, 1.0f); }
-		else { *contactNormal = Vec2f(0.0f, -1.0f); }
+		if (invDir.y < 0.0f)
+		{ *contactNormal = Vec2f(0.0f, 1.0f); }
+		else 
+		{ *contactNormal = Vec2f(0.0f, -1.0f); }
 	}
 	else
 	{
-		*contactNormal = {0, -1.f};
+		// 0,-1 tai jtn
+		*contactNormal = {0.f, 0.f};
+		std::cout << "cn on 0,0\n";
 	}
-
 	return true;
 }
 
 bool Collision::DynamicRectVsRect(const Rect& dynamic, const Vec2f& velocity, const Rect& _static, Vec2f* contactPoint, Vec2f* contactNormal, float* t_hit_near, const float dt)
 {
+	// ei toimi jos tekee tän v
 	//if (velocity.x == 0.0f || velocity.y == 0.0f)
 	//{
 	//	return false;
@@ -71,5 +77,11 @@ bool Collision::DynamicRectVsRect(const Rect& dynamic, const Vec2f& velocity, co
 	{
 		return *t_hit_near >= 0.0f && *t_hit_near <= 1.0f;
 	}
+	return false;
+}
+
+bool Collision::ResolveDynamicRectVsRect(const Rect& dynamic, const Vec2f& vel, const Rect& staticRect, const float dt)
+{
+
 	return false;
 }
