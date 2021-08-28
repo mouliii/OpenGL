@@ -114,16 +114,7 @@ void Game::Draw()
         }
     }
 
-    for (size_t i = 0; i < 2; i++)
-    {
-        if (Collision::DynamicRectVsRect(player, vel, i == 0 ? q : q2, &cp, &cn, &t, dt))
-        {
-            player.pos = cp;
-            float dotProduct = (vel.x * cn.y + vel.y * cn.x) * (1.f - t);
-            vel.x = dotProduct * cn.y;
-            vel.y = dotProduct * cn.x;
-        }
-    }
+    Collision::SweptAABB(player, vel, q, dt);
 
     player.pos += vel * dt;
     player.SetVertexPositions();

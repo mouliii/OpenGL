@@ -32,8 +32,9 @@ Renderer::Renderer()
 
 void Renderer::Draw(Primitive& primitive, const OrthoCamera& cam, const Texture* tex, Shader* shader)
 {
-	// todo fix
-	Texture defTex("res/textures/white1x1.png");
+	// ?
+	const auto defTex = TextureManager::GetTexture("res/textures/white1x1.png");
+	
 	if (shader != nullptr)
 	{
 		shader->Bind();
@@ -54,7 +55,7 @@ void Renderer::Draw(Primitive& primitive, const OrthoCamera& cam, const Texture*
 	else
 	{
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, defTex.GetID());
+		glBindTexture(GL_TEXTURE_2D, *defTex);
 	}
 	vao.Bind();
 	vbo.Bind();

@@ -1,5 +1,11 @@
 #include "Shader.h"
 
+Shader::~Shader()
+{
+    Unbind();
+    glDeleteProgram(id);
+}
+
 Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath)
 {
     LoadShaders(vertexPath, fragmentPath);
@@ -33,6 +39,7 @@ void Shader::LoadShaders(const std::string& vertexPath, const std::string& fragm
 
     GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
     // vertex string to c-string
+    
     const GLchar* vertexSrc = src.c_str();
     glShaderSource(vertexShader, 1, &vertexSrc, NULL);
     glCompileShader(vertexShader);
@@ -81,7 +88,7 @@ void Shader::LoadShaders(const std::string& vertexPath, const std::string& fragm
     glAttachShader(id, vertexShader);
     glAttachShader(id, fragmentShader);
     glLinkProgram(id);
-
+    
     glGetProgramiv(id, GL_LINK_STATUS, &success);
     if (!success)
     {
@@ -94,6 +101,8 @@ void Shader::LoadShaders(const std::string& vertexPath, const std::string& fragm
     glUseProgram(0);
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
+    
+
 }
 
 

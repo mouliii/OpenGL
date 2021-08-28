@@ -16,7 +16,7 @@ bool Collision::AABB(const Rect& r1, const Rect& r2)
 	return false;
 }
 
-bool Collision::RayVsRect(const Vec2f& rayOrigin, const Vec2f& rayDir, const Rect& rect, Vec2f* contactPoint, Vec2f* contactNormal, float* t_hit_near)
+bool Collision::RayVsRect(const Vec2f& rayOrigin, const Vec2f& rayDir, const Rect& rect, Vec2f* contactPoint, Vec2f* contactNormal, float* contactTime)
 { 
 	Vec2f rBotLeft = {rect.pos.x - rect.halfSize.x, rect.pos.y - rect.halfSize.y};
 	Vec2f rTopRight = { rect.pos.x + rect.halfSize.x, rect.pos.y + rect.halfSize.y };
@@ -34,12 +34,12 @@ bool Collision::RayVsRect(const Vec2f& rayOrigin, const Vec2f& rayDir, const Rec
 
 	if (t_near.x > t_far.y || t_near.y > t_far.x) { return false; }
 
-	*t_hit_near = std::max(t_near.x, t_near.y);
+	*contactTime = std::max(t_near.x, t_near.y);
 	float t_hit_far = std::min(t_far.x, t_far.y);
 	
 	if (t_hit_far < 0.0f) { return false; } 
 
-	*contactPoint = rayOrigin + *t_hit_near * rayDir;
+	*contactPoint = rayOrigin + *contactTime * rayDir;
 
 	if (t_near.x > t_near.y)
 	{
@@ -64,7 +64,7 @@ bool Collision::RayVsRect(const Vec2f& rayOrigin, const Vec2f& rayDir, const Rec
 	return true;
 }
 
-bool Collision::DynamicRectVsRect(const Rect& dynamic, const Vec2f& velocity, const Rect& _static, Vec2f* contactPoint, Vec2f* contactNormal, float* t_hit_near, const float dt)
+bool Collision::DynamicRectVsRect(const Rect& dynamic, const Vec2f& velocity, const Rect& _static, Vec2f* contactPoint, Vec2f* contactNormal, float* contactTime, const float dt)
 {
 	// ei toimi jos tekee tän v
 	//if (velocity.x == 0.0f || velocity.y == 0.0f)
@@ -73,15 +73,25 @@ bool Collision::DynamicRectVsRect(const Rect& dynamic, const Vec2f& velocity, co
 	//}
 	Rect rectExpanded(Vec2f(_static.pos), Vec2f(_static.halfSize + dynamic.halfSize), dynamic.color);
 
-	if (RayVsRect(dynamic.pos, velocity * dt, rectExpanded, contactPoint, contactNormal, t_hit_near))
+	if (RayVsRect(dynamic.pos, velocity * dt, rectExpanded, contactPoint, contactNormal, contactTime))
 	{
-		return *t_hit_near >= 0.0f && *t_hit_near <= 1.0f;
+		return *contactTime >= 0.0f && *contactTime <= 1.0f;
 	}
 	return false;
 }
 
-bool Collision::ResolveDynamicRectVsRect(const Rect& dynamic, const Vec2f& vel, const Rect& staticRect, const float dt)
+bool Collision::SweptAABB(Rect& dynamic, Vec2f& vel, const Rect& staticRect, const float dt)
 {
-
+	Vec2f cn = {0.f,0.f};
+	Vec2f cp = { 0.f,0.f };
+	float contactTime = 0.0f;
+	if (DynamicRectVsRect(dynamic, vel, staticRect, &cp, &cn, &contactTime, dt))
+	{
+		dynamic.pos = cp;
+		float dotProduct = (vel.x * cn.y + vel.y * cn.x) * (1.f - contactTime);
+		vel.x = dotProduct * cn.y;
+		vel.y = dotProduct * cn.x;
+		return true;
+	}
 	return false;
 }

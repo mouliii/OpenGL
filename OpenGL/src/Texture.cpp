@@ -33,6 +33,7 @@ Texture::Texture(const std::string& filepath, GLenum type)
     {
         std::cout << "Failed to load texture" << std::endl;
     }
+
 }
 
 Texture::~Texture()

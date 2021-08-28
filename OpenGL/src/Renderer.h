@@ -10,6 +10,7 @@
 #include "OrthoCamera.h"
 #include "Primitives.h"
 #include "Texture.h"
+#include "TextureManager.h"
 
 struct RenderStats
 {

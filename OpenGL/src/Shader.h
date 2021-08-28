@@ -12,6 +12,7 @@ class Shader
 {
 public:
 	Shader() = default;
+	~Shader();
 	Shader(const std::string& vertexPath, const std::string& fragmentPath);
 	void LoadShaders(const std::string& vertexPath, const std::string& fragmentPath);
 	void Bind() const;
@@ -26,6 +27,7 @@ public:
 	void CheckCompileErrors(unsigned int shader, std::string type);
 	unsigned int GetID() { return id; }
 	unsigned int GetUniformLocation(const std::string& name);
+
 private:
 	unsigned int id;
 	std::unordered_map<std::string, unsigned int> uniformCache;
