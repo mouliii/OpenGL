@@ -4,15 +4,17 @@
 #include "Mat3.h"
 #include "Vec3.h"
 #include "Vec2.h"
+#include "Primitives.h"
 
-#include "Batch.h"
+#include "Renderer.h"
+#include "OrthoCamera.h"
 
 class Rect
 {
 public:
-	Rect(Vec2f centerPos, Vec2f halfSize, glm::vec4 color, Batch* batch = nullptr)
+	Rect(Vec2f centerPos, Vec2f halfSize, glm::vec4 color)
 		:
-		pos(centerPos), halfSize(halfSize), color(color), batch(batch),
+		pos(centerPos), halfSize(halfSize), color(color),
 		quad(centerPos, halfSize, color)
 	{
 		//localVertices.reserve(4);
@@ -22,16 +24,15 @@ public:
 		//localVertices.emplace_back(Vec2f(0 - halfSize.x, 0 + halfSize.y));
 	};
 
-	void Draw()
+	void Draw(Renderer& renderer, const OrthoCamera& camera)
 	{
-		//std::vector<Vec2f> globalVertices = localVertices;
-		//
-		//globalVertices[0] += Vec2f(pos.x, pos.y);
-		//globalVertices[1] += Vec2f(pos.x, pos.y);
-		//globalVertices[2] += Vec2f(pos.x, pos.y);
-		//globalVertices[3] += Vec2f(pos.x, pos.y);
-
-		//batch->Update(vertices);
+		SetVertexPositions();
+		renderer.Draw(quad, camera, texture.get() );
+	}
+	void Draw(Renderer& renderer, const OrthoCamera& camera, Texture* texture)
+	{
+		//auto asd = texture->GetID();
+		renderer.Draw(quad, camera, texture );
 	}
 	void SetVertexPositions()
 	{
@@ -41,12 +42,15 @@ public:
 		verts[2].pos = Vec3f(Vec2f(pos.x + halfSize.x, pos.y + halfSize.y), 0.0f);
 		verts[3].pos = Vec3f(Vec2f(pos.x - halfSize.x, pos.y + halfSize.y), 0.0f);
 	}
-
+	void LoadTexture(const std::string& path)
+	{
+		texture = TextureManager::GetTexture(path);
+	}
 public:
 	//std::vector<Vec2f> localVertices;
 	Quad quad;
 	Vec2f pos;
 	Vec2f halfSize;
 	glm::vec4 color;
-	Batch* batch;
+	std::shared_ptr<Texture> texture;
 };

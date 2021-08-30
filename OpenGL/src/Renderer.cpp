@@ -30,10 +30,10 @@ Renderer::Renderer()
 	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, &color);
 }
 
-void Renderer::Draw(Primitive& primitive, const OrthoCamera& cam, const Texture* tex, Shader* shader)
+void Renderer::Draw(Primitive& primitive, const OrthoCamera& cam, Texture* texture, Shader* shader)
 {
-	// ?
-	const auto defTex = TextureManager::GetTexture("res/textures/white1x1.png");
+	// todo cache vai ?
+	const auto defaultTexture = TextureManager::GetTexture("res/textures/white1x1.png");
 	
 	if (shader != nullptr)
 	{
@@ -47,42 +47,16 @@ void Renderer::Draw(Primitive& primitive, const OrthoCamera& cam, const Texture*
 		glm::mat4 viewProj = cam.GetViewProjectionMatrix();
 		this->shader.SetUniform4fv("uViewProj", viewProj);
 	}
-	if (tex != nullptr)
+	if (texture != nullptr)
 	{
 		glActiveTexture(GL_TEXTURE0);
-		tex->Bind();
+		glBindTexture(GL_TEXTURE_2D, texture->GetId() );
 	}
 	else
 	{
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, *defTex);
+		glBindTexture(GL_TEXTURE_2D, defaultTexture->GetId());
 	}
-	vao.Bind();
-	vbo.Bind();
-	vbo.SetData(primitive.GetVertexCount() * sizeof(Vertex), primitive.GetVertices().data());
-	ibo.Bind();
-	ibo.SetData(primitive.GetIndices());
-	glDrawElements(GL_TRIANGLES, primitive.GetIndexCount(), GL_UNSIGNED_INT, 0);
-	vao.Unbind();
-}
-
-void Renderer::Draw( Primitive& primitive, const OrthoCamera& cam, const std::shared_ptr<uint32_t> tex, Shader* shader)
-{
-	if (shader != nullptr)
-	{
-		shader->Bind();
-		glm::mat4 viewProj = cam.GetViewProjectionMatrix();
-		shader->SetUniform4fv("uViewProj", viewProj);
-	}
-	else
-	{
-		this->shader.Bind();
-		glm::mat4 viewProj = cam.GetViewProjectionMatrix();
-		this->shader.SetUniform4fv("uViewProj", viewProj);
-	}
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, *tex);
-	
 	vao.Bind();
 	vbo.Bind();
 	vbo.SetData(primitive.GetVertexCount() * sizeof(Vertex), primitive.GetVertices().data());

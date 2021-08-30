@@ -42,7 +42,7 @@ void Batch::Draw(const OrthoCamera& cam)
 	// todo
 	auto id = TextureManager::GetTexture("res/textures/white1x1.png");
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, *id);
+	glBindTexture(GL_TEXTURE_2D, id->GetId());
 	// TÄHÄN TEXTURE ID | päivitä updatessa, vector ?
 	vao.Bind();
 

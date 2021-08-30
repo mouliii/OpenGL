@@ -59,7 +59,6 @@ bool Collision::RayVsRect(const Vec2f& rayOrigin, const Vec2f& rayDir, const Rec
 	{
 		// 0,-1 tai jtn
 		*contactNormal = {0.f, 0.f};
-		std::cout << "cn on 0,0\n";
 	}
 	return true;
 }
@@ -94,4 +93,35 @@ bool Collision::SweptAABB(Rect& dynamic, Vec2f& vel, const Rect& staticRect, con
 		return true;
 	}
 	return false;
+}
+
+void Collision::CheckAABBCollisions(Rect& dynamic, Vec2f& vel, const std::vector<Rect>& rects, const float dt)
+{
+	Vec2f cn = { 0.f,0.f };
+	Vec2f cp = { 0.f,0.f };
+	float contactTime = 0.0f;
+	// first pass - check collisions
+	std::vector<std::pair<size_t, float>> z;
+	for (size_t i = 0; i < rects.size(); i++)
+	{
+		// calc collision distance
+		if (Collision::DynamicRectVsRect(dynamic, vel, rects[i], &cp, &cn, &contactTime, dt))
+		{
+			z.push_back({ i,contactTime });
+		}
+	}
+	//sort col dist
+	std::sort(z.begin(), z.end(), [](const std::pair<int, float>& a, const std::pair<int, float>& b) { return a.second < b.second; });
+
+	// second pass - resolve
+	for (auto& j : z)
+	{
+		if (Collision::DynamicRectVsRect(dynamic, vel, rects[j.first], &cp, &cn, &contactTime, dt))
+		{
+			dynamic.pos = cp;
+			float dotProduct = (vel.x * cn.y + vel.y * cn.x) * (1.f - contactTime);
+			vel.x = dotProduct * cn.y;
+			vel.y = dotProduct * cn.x;
+		}
+	}
 }

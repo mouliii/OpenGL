@@ -88,7 +88,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);GLEW_STATIC</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\glad\include\glad;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\glad\include\;src/utils;$(SolutionDir)Dependencies\box2d\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\glad\include\glad;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\glad\include\;src/utils;$(SolutionDir)OpenGL\src;$(SolutionDir)Dependencies\box2d\include</AdditionalIncludeDirectories>
       <FloatingPointModel>Fast</FloatingPointModel>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
@@ -109,7 +109,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);GLEW_STATIC</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\glad\include\glad;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\glad\include\;src/utils;$(SolutionDir)Dependencies\box2d\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\glad\include\glad;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\glad\include\;src/utils;$(SolutionDir)OpenGL\src;$(SolutionDir)Dependencies\box2d\include</AdditionalIncludeDirectories>
       <FloatingPointModel>Fast</FloatingPointModel>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
@@ -155,6 +155,7 @@
   <ItemGroup>
     <ClCompile Include="src\Batch.cpp" />
     <ClCompile Include="src\Collision.cpp" />
+    <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\IndexBuffer.cpp" />
     <ClCompile Include="src\OrthoCamera.cpp" />
@@ -162,8 +163,8 @@
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\QuadRenderer.cpp" />
     <ClCompile Include="src\Renderer.cpp" />
-    <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\Texture.cpp" />
+    <ClCompile Include="src\Tilemap\Tilemap.cpp" />
     <ClCompile Include="src\utils\glm\detail\glm.cpp" />
     <ClCompile Include="src\utils\imgui\imgui.cpp" />
     <ClCompile Include="src\utils\imgui\imgui_demo.cpp" />
@@ -182,6 +183,7 @@
     <ClInclude Include="src\IndexBuffer.h" />
     <ClInclude Include="src\Mat3.h" />
     <ClInclude Include="src\Mat4.h" />
+    <ClInclude Include="src\Mesh.h" />
     <ClInclude Include="src\OrthoCamera.h" />
     <ClInclude Include="src\Primitives.h" />
     <ClInclude Include="src\QuadRenderer.h" />
@@ -192,6 +194,7 @@
     <ClInclude Include="src\Texture.h" />
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\TextureManager.h" />
+    <ClInclude Include="src\Tilemap\Tilemap.h" />
     <ClInclude Include="src\utils\box2d\b2_api.h" />
     <ClInclude Include="src\utils\box2d\b2_block_allocator.h" />
     <ClInclude Include="src\utils\box2d\b2_body.h" />
@@ -522,6 +525,7 @@
     <ClInclude Include="src\utils\imgui\imstb_rectpack.h" />
     <ClInclude Include="src\utils\imgui\imstb_textedit.h" />
     <ClInclude Include="src\utils\imgui\imstb_truetype.h" />
+    <ClInclude Include="src\utils\json.hpp" />
     <ClInclude Include="src\utils\stb\stb_image.h" />
     <ClInclude Include="src\Vec2.h" />
     <ClInclude Include="src\Vec3.h" />

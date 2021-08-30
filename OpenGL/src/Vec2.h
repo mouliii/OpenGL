@@ -50,7 +50,6 @@ public:
 	}
 	friend Vec2 operator*(const T lhs, const Vec2& rhs)
 	{
-		// Vec2 on friend, että se voi olla toinen argumentti Vec2 classissa ???? 
 		return rhs * lhs;
 	}
 	Vec2 operator*(const T rhs) const
@@ -69,7 +68,6 @@ public:
 	{
 		return *this = *this * rhs;
 	}
-	////////////////////////////////////////////////// TODO JAKO 0 //////////////////////////////////////////////////////////////
 	Vec2 operator/(const T rhs) const
 	{
 		return Vec2(x / rhs, y / rhs);
@@ -119,6 +117,10 @@ public:
 		const auto cos = std::cos(theta);
 		const auto sin = std::sin(theta);
 		return Vec2(cos * x - sin * y, sin * x + cos * y);
+	}
+	float Dot(const Vec2& a, const Vec2& b)
+	{
+		return Vec2(a.x * b.x + a.y * b.y);
 	}
 public:
 	T x;

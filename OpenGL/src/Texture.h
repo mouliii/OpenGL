@@ -18,11 +18,11 @@ public:
 	void Bind() const;
 	void Unbind() const;
 	void Delete() const;
-	const unsigned int GetID() const;
+	const uint32_t GetId() const;
 private:
 	int width;
 	int height;
 	int nChannels;
-	unsigned int id = 0;
+	uint32_t id = 0;
 	GLenum type = GL_TEXTURE_2D;
 };

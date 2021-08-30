@@ -57,7 +57,7 @@ void Texture::Delete() const
     glDeleteTextures(1, &id);
 }
 
-const unsigned int Texture::GetID() const
+const uint32_t Texture::GetId() const
 {
     return id;
 }

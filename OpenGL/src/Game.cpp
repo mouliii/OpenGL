@@ -4,13 +4,8 @@ Game::Game(GLFWwindow* window)
 	: 
     window(window),
     camera(0.0f, windowWidth, 0.0f, windowHeight),
-    player(Vec2f(300.f, 300.f), Vec2f(20.f, 30.f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f))
+    shader("res/shaders/DefaultVertex.shader", "res/shaders/DefaultFragment.shader")
 {
-    for (size_t i = 0; i < 20; i++)
-    {
-        rects.emplace_back(Vec2f(400.f + i*60, 100.f), Vec2f(10.f, 10.f), glm::vec4(0.4f, 0.5f, 0.45f, 1.0f));
-    }
-    rects.emplace_back(Vec2f(400.f + 1 * 60, 150.f), Vec2f(10.f, 10.f), glm::vec4(0.4f, 0.5f, 0.45f, 1.0f));
 }
 
 Game::~Game()
@@ -53,86 +48,22 @@ void Game::Update()
     glfwGetCursorPos(window, &mx, &my);
     my = double(windowHeight) - my;
     mousePos = Vec2f(float(mx), float(my));
+
 }
 
 void Game::Draw()
 {
-    Shader s("res/shaders/DefaultVertex.shader", "res/shaders/DefaultFragment.shader");
-    s.Bind();
+    shader.Bind();
     glm::mat4 viewProj = camera.GetViewProjectionMatrix();
-    s.SetUniform4fv("uViewProj", viewProj);
+    shader.SetUniform4fv("uViewProj", viewProj);
 
-    Vec2f dir = { 0.0f,0.0f };
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        dir.x = -1;
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        dir.x = 1;
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        dir.y = 1;
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        dir.y = -1;
-    dir.Normalize();
-    vel = dir * speed;
+    Rect rect({ 100.f,100.f }, { 100.f ,100.f }, { 1.0f,0.0f ,1.0f ,1.0f });
+    //rect.LoadTexture("res/textures/container.jpg");
+    std::shared_ptr<Texture> t =  TextureManager::GetTexture("res/textures/container.jpg");
 
-    Rect q(Vec2f(300.f, 400.f), Vec2f(15.f, 30.f), glm::vec4(0.4f, 0.3f, 0.78f, 1.0f));
-    Rect q2({ 270.f, 360.f }, { 15.f, 30.f }, { 0.4f, 0.3f, 0.78f, 1.0f });
-    Line l(player.pos, Vec2f(mousePos), glm::vec4(0.0f, 1.0f, 1.0f, 1.0f), 1);
-
-    Vec2f cp, cn;
-    float t;
-
-    if (Collision::RayVsRect(player.pos, mousePos - player.pos, q, &cp, &cn, &t) && t <= 1.0f)
-        q.quad.SetVertexColor(glm::vec4(0.6f, 0.3f, 0.28f, 1.0f));
-    else
-        q.quad.SetVertexColor(glm::vec4(0.4f, 0.3f, 0.78f, 1.0f));
-
-    // first pass
-    float tSort = 0;
-    std::vector<std::pair<size_t, float>> z;
-    for (size_t i = 0; i < rects.size(); i++)
-    {
-        
-        // collision distance
-        if (Collision::DynamicRectVsRect(player, vel, rects[i], &cp, &cn, &tSort, dt))
-        {
-            z.push_back({ i,tSort });
-        }
-    }
-    //sort col dist
-    std::sort(z.begin(), z.end(), [](const std::pair<int, float>& a, const std::pair<int, float>& b) { return a.second < b.second;});
-
-
-    // second pass
-    for (auto& j : z)
-    {
-        if (Collision::DynamicRectVsRect(player, vel, rects[j.first], &cp, &cn, &t, dt))
-        {
-            player.pos = cp;
-            float dotProduct = (vel.x * cn.y + vel.y * cn.x) * (1.f - t);
-            vel.x = dotProduct * cn.y;
-            vel.y = dotProduct * cn.x;
-        }
-    }
-
-    Collision::SweptAABB(player, vel, q, dt);
-
-    player.pos += vel * dt;
-    player.SetVertexPositions();
-  
-
-    gfx.Draw(q.quad, camera);
-    gfx.Draw(player.quad, camera);
-    gfx.Draw(l, camera);
-
-    gfx.Draw(q2.quad, camera);
-
-    for (size_t i = 0; i < rects.size(); i++)
-    {
-        gfx.Draw(rects[i].quad, camera);
-    }
-
+    rect.Draw(renderer, camera, t.get());
+    // imgui
     ImGui::Begin("Test");
-    ImGui::Text("player pos: %.0f, %.0f ", player.pos.x, player.pos.y);
-    ImGui::Text("player vel: %.1f, %.1f ", vel.x, vel.y);
+    //ImGui::Text("player pos: %.0f, %.0f ", player.pos.x, player.pos.y);
     ImGui::End();
 }
