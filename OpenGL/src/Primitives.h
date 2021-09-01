@@ -15,14 +15,7 @@ public:
 	std::vector<Vertex>& GetVertices() { return vertices; }
 	const uint32_t GetVertexCount() const { return vertices.size(); }
 	const uint32_t GetIndexCount() const { return indices.size(); }
-	void SetVertexColor(glm::vec4 color)
-	{
-		for (size_t i = 0; i < vertices.size(); i++)
-		{
-			vertices[i].color = color;
-		}
-	}
-protected:
+public:
 	std::vector<Vertex> vertices;
 	std::vector<uint32_t> indices;
 };

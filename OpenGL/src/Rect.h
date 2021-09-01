@@ -24,15 +24,15 @@ public:
 		//localVertices.emplace_back(Vec2f(0 - halfSize.x, 0 + halfSize.y));
 	};
 
-	void Draw(Renderer& renderer, const OrthoCamera& camera)
+	void Draw(Renderer& renderer)
 	{
 		SetVertexPositions();
-		renderer.Draw(quad, camera, texture.get() );
+		renderer.Draw(quad, texture.get() );
 	}
 	void Draw(Renderer& renderer, const OrthoCamera& camera, Texture* texture)
 	{
 		//auto asd = texture->GetID();
-		renderer.Draw(quad, camera, texture );
+		renderer.Draw(quad, texture );
 	}
 	void SetVertexPositions()
 	{
@@ -44,7 +44,7 @@ public:
 	}
 	void LoadTexture(const std::string& path)
 	{
-		texture = TextureManager::GetTexture(path);
+		texture = TextureManager::LoadTexture(path);
 	}
 public:
 	//std::vector<Vec2f> localVertices;

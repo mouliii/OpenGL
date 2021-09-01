@@ -40,7 +40,7 @@ void Batch::Draw(const OrthoCamera& cam)
 	shader.SetUniform4fv("uViewProj", viewProj);
 	shader.SetUniform1f("textureIndex", 0);
 	// todo
-	auto id = TextureManager::GetTexture("res/textures/white1x1.png");
+	auto id = TextureManager::LoadTexture("res/textures/white1x1.png");
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, id->GetId());
 	// TÄHÄN TEXTURE ID | päivitä updatessa, vector ?

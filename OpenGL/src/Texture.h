@@ -19,6 +19,8 @@ public:
 	void Unbind() const;
 	void Delete() const;
 	const uint32_t GetId() const;
+	const int GetWidth() const { return width; };
+	const int GetHeight() const { return height; }
 private:
 	int width;
 	int height;

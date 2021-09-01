@@ -9,6 +9,8 @@
 #include "Renderer.h"
 #include "Collision.h"
 
+#include "tilemap/Tilemap.h"
+
 class Game
 {
 public:
@@ -22,12 +24,15 @@ private:
 	GLFWwindow* window;
 	const float windowWidth = 960;
 	const float windowHeight = 540;
-	Renderer renderer;
 	OrthoCamera camera;
-	Shader shader;
+	Renderer renderer;
 	Vec2<float> mousePos = { 0.0f,0.0f };
 	float lastFrameTime = 0.0f;
 	float dt = 0.0f;
 
-
+public:
+	Tilemap map;
+	float cameraSpeed = 150.f;
+public:
+	void MoveCamera(float dt);
 };

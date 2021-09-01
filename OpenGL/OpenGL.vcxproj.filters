@@ -84,9 +84,6 @@
     <ClCompile Include="src\IndexBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\QuadRenderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Batch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -1140,9 +1137,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\VertexData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\QuadRenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Batch.h">

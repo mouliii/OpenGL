@@ -161,7 +161,6 @@
     <ClCompile Include="src\OrthoCamera.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\Main.cpp" />
-    <ClCompile Include="src\QuadRenderer.cpp" />
     <ClCompile Include="src\Renderer.cpp" />
     <ClCompile Include="src\Texture.cpp" />
     <ClCompile Include="src\Tilemap\Tilemap.cpp" />
@@ -186,7 +185,6 @@
     <ClInclude Include="src\Mesh.h" />
     <ClInclude Include="src\OrthoCamera.h" />
     <ClInclude Include="src\Primitives.h" />
-    <ClInclude Include="src\QuadRenderer.h" />
     <ClInclude Include="src\Rect.h" />
     <ClInclude Include="src\Renderer.h" />
     <ClInclude Include="src\Shape.h" />

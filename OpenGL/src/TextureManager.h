@@ -16,11 +16,11 @@ public:
         static TextureManager instance;
         return instance;
     }
-    static std::shared_ptr<Texture> GetTexture(const std::string& path) { return Get().I_GetTexture(path); }
+    static std::shared_ptr<Texture> LoadTexture(const std::string& path) { return Get().I_LoadTexture(path); }
     static void FreeUnusedTextures() { Get().I_FreeUnusedTextures(); }
 private:
     TextureManager() {};
-	std::shared_ptr<Texture> I_GetTexture(const std::string& path)
+	std::shared_ptr<Texture> I_LoadTexture(const std::string& path)
 	{
 		size_t position = path.find_last_of('/')+ 1;
 		const std::string name = path.substr(position, path.size() - position);
