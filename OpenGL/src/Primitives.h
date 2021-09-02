@@ -19,7 +19,7 @@ public:
 public:
 	std::vector<Vertex> vertices;
 	std::vector<uint32_t> indices;
-	float textureIndex;
+	float textureIndex = 0.0f;
 };
 
 class Quad : public Primitive

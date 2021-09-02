@@ -37,11 +37,11 @@ public:
 		//}
 		this->color = color;
 	}
-	void SetTextureIndex(float i)
+	void SetTextureIndex(float index)
 	{
 		for (size_t i = 0; i < vertices.size(); i++)
 		{
-			vertices[i].textureIndex = (float)i;
+			vertices[i].textureIndex = index;
 		}
 	}
 	const std::shared_ptr<Texture> GetTexture() const { return texture; }

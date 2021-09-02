@@ -78,7 +78,7 @@ int main(void)
     const GLubyte* vendor = glGetString(GL_VENDOR);
     const GLubyte* renderer = glGetString(GL_RENDERER);
     const GLubyte* version = glGetString(GL_VERSION);
-    std::cout << vendor << "\n" << renderer << "\n" << version << "\n";
+    std::cout << vendor << "\n" << renderer << "\n" << "OpenGL ver/driver: " << version << "\n";
 
     glEnable(GL_BLEND);
     //glDisable(GL_BLEND);

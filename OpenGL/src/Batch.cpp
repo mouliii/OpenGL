@@ -15,6 +15,10 @@ Batch::Batch(std::string batchName, Primitive batchType, uint32_t maxBatchCount)
 		}
 		offset += batchType.GetVertexCount();
 	}
+	for (size_t i = 0; i < maxNumVertices; i++)
+	{
+		vertices.push_back({ Vec3f(Vec2f(), 0.0f), glm::vec4(), Vec2f(), 0.0f });
+	}
 	vao.Bind();
 	vbo.Bind();
 	vbo.SetData(maxNumVertices * sizeof(Vertex), nullptr);
@@ -24,6 +28,7 @@ Batch::Batch(std::string batchName, Primitive batchType, uint32_t maxBatchCount)
 	vao.LinkAttribute(vbo, 0, 3, GL_FLOAT, sizeof(Vertex), (GLvoid*)offsetof(Vertex, pos));
 	vao.LinkAttribute(vbo, 1, 4, GL_FLOAT, sizeof(Vertex), (GLvoid*)offsetof(Vertex, color));
 	vao.LinkAttribute(vbo, 2, 2, GL_FLOAT, sizeof(Vertex), (GLvoid*)offsetof(Vertex, texCoord));
+	vao.LinkAttribute(vbo, 3, 1, GL_FLOAT, sizeof(Vertex), (GLvoid*)offsetof(Vertex, textureIndex));
 
 	vao.Unbind();
 	vbo.Unbind();
@@ -38,7 +43,7 @@ Batch::Batch(std::string batchName, Primitive batchType, uint32_t maxBatchCount)
 	int samplers[16];
 	for (size_t i = 0; i < 16; i++)
 	{
-		samplers[i] = 1;
+		samplers[i] = i;
 	}
 	shader.Bind();
 	auto loc = shader.GetUniformLocation("uTextures");
@@ -69,6 +74,7 @@ void Batch::Flush()
 		glBindTexture(GL_TEXTURE_2D, textureSlots[i]);
 	}
 	vao.Bind();
+	// limit indices ? todo samoiten tex slotit
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 }
 
@@ -100,25 +106,38 @@ void Batch::Update(const std::vector<Vertex>& vertices, const std::shared_ptr<Te
 	}
 }
 
+void Batch::Update(Mesh& mesh)
+{
+	if (textureSlotIndex > textureSlots.size() || curVertexCount >= maxNumVertices)
+	{
+		EndBatch();
+		Flush();
+		BeginBatch();
+	}
+	int textureIndex = 0;
+	for (size_t i = 1; i < textureSlotIndex; i++)
+	{
+		if (mesh.GetTexture()->GetId() == textureSlots[i])
+		{
+			textureIndex = textureSlots[i];
+			mesh.SetTextureIndex((float)i);
+		}
+	}
+	if (textureIndex == 0)
+	{
+		textureSlots[textureSlotIndex] = mesh.GetTexture()->GetId();
+		mesh.SetTextureIndex((float)textureSlotIndex);
+		textureSlotIndex++;
+	}
+	for (size_t i = 0; i < mesh.GetVertices().size(); i++)
+	{
+		this->vertices[curVertexCount] = mesh.GetVertices()[i];
+		curVertexCount++;
+	}
+}
+
 void Batch::SetSubData(uint32_t offsetCount, uint32_t count, const void* data)
 {
 	// binds buffer
 	vbo.SetSubData(offsetCount, count, data);
-}
-
-void Batch::Add(uint32_t count, const Primitive& primitive)
-{
-	for (size_t i = 0; i < count; i++)
-	{
-		for (size_t k = 0; k < primitive.GetVertexCount(); k++)
-		{
-			vertices.push_back({ Vec3f(Vec2f(), 0.0f), glm::vec4(), Vec2f() });
-		}
-	}
-}
-
-// ei toiminnasssa atm
-void Batch::Remove()
-{
-	vertices.pop_back();
 }

@@ -22,9 +22,8 @@ public:
 	void BeginBatch();
 	void EndBatch();
 	void Flush();
-	void Add(uint32_t count, const Primitive& primitive);
-	void Remove();
 	void Update(const std::vector<Vertex>& vertices, const std::shared_ptr<Texture>& texture);
+	void Update(Mesh& mesh);
 	void SetSubData(uint32_t offsetCount, uint32_t count, const void* data);
 private:
 	std::string name;

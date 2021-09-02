@@ -5,18 +5,12 @@
 Game::Game(GLFWwindow* window)
 	: 
     window(window),
-    camera(0.0f, windowWidth, 0.0f, windowHeight),
+    //camera(0.0f, windowWidth, 0.0f, windowHeight),
+    camera(-windowWidth/2.f, windowWidth / 2.f, -windowHeight/2.f, windowHeight / 2.f),
     renderer(&camera),
     map("res/levels/level1/test_map.json", "todo", "res/levels/level1/Tileset.png"),
     batch("tilemap", Quad())
 {
-    for (size_t i = 0; i < map.GetTiles().size(); i++)
-    {
-        for (size_t j = 0; j < map.GetTiles()[i].size(); j++)
-        {
-            batch.Add(1, Quad());
-        }
-    }
 }
 
 Game::~Game()
@@ -72,14 +66,31 @@ void Game::Draw()
     {
         for (size_t j = 0; j < map.GetTiles()[i].size(); j++)
         {
-            //renderer.Draw(map.GetTiles()[i][j]);
-            const auto& verts = map.GetTiles()[i][j].GetVertices();
-            batch.Update(verts, map.GetTiles()[i][j].GetTexture());
+           // renderer.Draw(map.GetTiles()[i][j]);
+           // const auto& verts = map.GetTiles()[i][j].GetVertices();
+           // batch.Update(verts, map.GetTiles()[i][j].GetTexture());
+            batch.Update(map.GetTiles()[i][j]);
         }
     }
     batch.EndBatch();
     batch.Flush();
     
+    Quad q1({ 150.f,150.f }, { 15.f,15.f }, glm::vec4(1.f));
+    Quad q2({ 350.f,150.f }, { 15.f,15.f }, glm::vec4(1.f));
+    Mesh m1(q1);
+    Mesh m2(q2);
+    m1.LoadTexture("res/textures/plul.jpg");
+    m2.LoadTexture("res/textures/awesomeface.png");
+    Batch b2("wtf",Quad());
+    b2.cam = &camera;
+    b2.BeginBatch();
+    b2.Update(m1);
+    b2.Update(m2);
+    b2.EndBatch();
+    b2.Flush();
+
+
+
     // imgui
     ImGui::Begin("Test");
     //ImGui::Text("player pos: %.0f, %.0f ", player.pos.x, player.pos.y);
@@ -101,8 +112,9 @@ void Game::MoveCamera(float dt)
     camera.position += glm::vec3(cameraSpeed * dir.x * dt, cameraSpeed * dir.y * dt, 0.0f);
 
     if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
-        camera.scale -= 0.1f * dt;
-    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
-        camera.scale += 0.1f * dt;
-
+        camera.scale -= 0.4f * dt;
+    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
+        camera.scale += 0.4f * dt;
+        std::cout << camera.scale << std::endl;
+    }
 }
