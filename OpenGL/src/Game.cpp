@@ -7,8 +7,16 @@ Game::Game(GLFWwindow* window)
     window(window),
     camera(0.0f, windowWidth, 0.0f, windowHeight),
     renderer(&camera),
-    map("res/levels/level1/test_map.json", "todo", "res/levels/level1/Tileset.png")
+    map("res/levels/level1/test_map.json", "todo", "res/levels/level1/Tileset.png"),
+    batch("tilemap", Quad())
 {
+    for (size_t i = 0; i < map.GetTiles().size(); i++)
+    {
+        for (size_t j = 0; j < map.GetTiles()[i].size(); j++)
+        {
+            batch.Add(1, Quad());
+        }
+    }
 }
 
 Game::~Game()
@@ -58,14 +66,19 @@ void Game::Update()
 
 void Game::Draw()
 {
+    batch.cam = &camera;
+    batch.BeginBatch();
     for (size_t i = 0; i < map.GetTiles().size(); i++)
     {
         for (size_t j = 0; j < map.GetTiles()[i].size(); j++)
         {
-            renderer.Draw(map.GetTiles()[i][j]);
+            //renderer.Draw(map.GetTiles()[i][j]);
+            const auto& verts = map.GetTiles()[i][j].GetVertices();
+            batch.Update(verts, map.GetTiles()[i][j].GetTexture());
         }
     }
-
+    batch.EndBatch();
+    batch.Flush();
     
     // imgui
     ImGui::Begin("Test");
@@ -86,5 +99,10 @@ void Game::MoveCamera(float dt)
         dir.y -= 1;
     dir.Normalize();
     camera.position += glm::vec3(cameraSpeed * dir.x * dt, cameraSpeed * dir.y * dt, 0.0f);
+
+    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+        camera.scale -= 0.1f * dt;
+    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+        camera.scale += 0.1f * dt;
 
 }

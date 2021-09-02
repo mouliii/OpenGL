@@ -88,6 +88,8 @@ int main(void)
     glViewport(0, 0, WINDOWWIDTH, WINDOWHEIGHT);
     // V-Sync
     glfwSwapInterval(1);
+    // draw mode
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     //Setup IMGUI
     IMGUI_CHECKVERSION();

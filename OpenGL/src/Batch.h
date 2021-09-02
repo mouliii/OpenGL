@@ -8,7 +8,7 @@
 #include "IndexBuffer.h"
 #include "Shader.h"
 #include "OrthoCamera.h"
-#include "Primitives.h"
+#include "Mesh.h"
 #include "TextureManager.h"
 
 #include "Vec2.h"
@@ -18,31 +18,34 @@
 class Batch
 {
 public:
-	// GL_FILL, GL_LINE
-	Batch(GLenum drawMode, std::string batchName, Shader shader, Primitive primitive, uint32_t maxBatchCount = 10000);
-	void Draw(const OrthoCamera& cam);
+	Batch(std::string batchName, Primitive batchType, uint32_t maxBatchCount = 10000);
+	void BeginBatch();
+	void EndBatch();
+	void Flush();
 	void Add(uint32_t count, const Primitive& primitive);
 	void Remove();
-	void Update(Primitive& primitive, const std::shared_ptr<uint32_t>& textureId = nullptr);
-	void SetSubData();
+	void Update(const std::vector<Vertex>& vertices, const std::shared_ptr<Texture>& texture);
 	void SetSubData(uint32_t offsetCount, uint32_t count, const void* data);
 private:
 	std::string name;
 	std::vector<Vertex> vertices;
 	std::vector<uint32_t> indices;
-	std::vector<uint32_t> textureIds;
+	std::vector<uint32_t> textureSlots;
 	Primitive primitive;
 	VertexArray vao;
 	VertexBuffer vbo;
 	IndexBuffer ibo;
+	uint32_t textureSlotIndex = 1;
 	Shader shader;
 
 public:
 	uint32_t maxBatchCount;
 	uint32_t maxNumVertices;
 	uint32_t maxNumIndices;
-	uint32_t curVertex = 0;
-	GLenum drawMode;
+	uint32_t curVertexCount = 0;
 
 	uint32_t numOfDrawCalls = 0;
+
+	//testi
+	OrthoCamera* cam = nullptr;
 };

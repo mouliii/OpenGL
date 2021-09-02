@@ -101,11 +101,7 @@ void Shader::LoadShaders(const std::string& vertexPath, const std::string& fragm
     glUseProgram(0);
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
-    
-
 }
-
-
 
 void Shader::Bind() const
 {

@@ -1,19 +1,19 @@
 #include "Batch.h"
 
-Batch::Batch(GLenum drawMode, std::string batchName, Shader shader, Primitive primitive, uint32_t maxBatchCount)
+Batch::Batch(std::string batchName, Primitive batchType, uint32_t maxBatchCount)
 	:
-	drawMode(drawMode), name(batchName), primitive(primitive), shader(shader),
-	maxBatchCount(maxBatchCount), maxNumVertices(maxBatchCount* primitive.GetVertices().size()), maxNumIndices(maxBatchCount* primitive.GetIndexCount()),
+	name(batchName), shader("res/shaders/DefaultBatchVertex.shader", "res/shaders/DefaultBatchFragment.shader"), primitive(batchType),
+	maxBatchCount(maxBatchCount), maxNumVertices(maxBatchCount * batchType.GetVertexCount()), maxNumIndices(maxBatchCount* batchType.GetIndexCount()),
 	vao(),vbo(),ibo()
 {
 	uint32_t offset = 0;
-	for (size_t i = 0; i < maxNumIndices; i+= primitive.GetVertices().size())
+	for (size_t i = 0; i < maxNumIndices; i+= batchType.GetVertexCount())
 	{
-		for (size_t j = 0; j < primitive.GetIndexCount(); j++)
+		for (size_t j = 0; j < batchType.GetIndexCount(); j++)
 		{
-			indices.emplace_back(offset + primitive.GetIndices()[j]);
+			indices.emplace_back(offset + batchType.GetIndices()[j]);
 		}
-		offset += primitive.GetVertices().size();
+		offset += batchType.GetVertexCount();
 	}
 	vao.Bind();
 	vbo.Bind();
@@ -28,67 +28,81 @@ Batch::Batch(GLenum drawMode, std::string batchName, Shader shader, Primitive pr
 	vao.Unbind();
 	vbo.Unbind();
 	ibo.Unbind();
-}
-
-void Batch::Draw(const OrthoCamera& cam)
-{
-	curVertex = 0;
-	numOfDrawCalls = 0;
-
+	for (size_t i = 0; i < 16; i++)
+	{
+		textureSlots.emplace_back(0);
+	}
+	// toimiiko?
+	textureSlots[0] = TextureManager::LoadTexture("res/textures/white1x1.png")->GetId();
+	// setup samplers
+	int samplers[16];
+	for (size_t i = 0; i < 16; i++)
+	{
+		samplers[i] = 1;
+	}
 	shader.Bind();
-	glm::mat4 viewProj = cam.GetViewProjectionMatrix();
-	shader.SetUniform4fv("uViewProj", viewProj);
-	shader.SetUniform1f("textureIndex", 0);
-	// todo
-	auto id = TextureManager::LoadTexture("res/textures/white1x1.png");
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, id->GetId());
-	// TÄHÄN TEXTURE ID | päivitä updatessa, vector ?
+	auto loc = shader.GetUniformLocation("uTextures");
+	glUniform1iv(loc, 16, samplers);
+	shader.Unbind();
+}
+
+void Batch::BeginBatch()
+{
+	curVertexCount = 0;
+	numOfDrawCalls = 0;
+	textureSlotIndex = 1;
+}
+
+void Batch::EndBatch()
+{
+	SetSubData(0, curVertexCount, &vertices[0]);
+}
+
+void Batch::Flush()
+{
+	shader.Bind();
+	shader.SetUniform4fv("uViewProj", cam->GetViewProjectionMatrix() );
+
+	for (size_t i = 0; i < textureSlots.size(); i++)
+	{
+		glActiveTexture(GL_TEXTURE0 + i);
+		glBindTexture(GL_TEXTURE_2D, textureSlots[i]);
+	}
 	vao.Bind();
-
-	uint32_t leftToDraw = vertices.size();
-	uint32_t vertPointer = 0;
-	glPolygonMode(GL_FRONT_AND_BACK, drawMode);
-	while (leftToDraw >= maxNumVertices)
-	{
-		SetSubData(0, maxNumVertices, &vertices[vertPointer]);
-		glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
-		leftToDraw -= maxNumVertices;
-		vertPointer += maxNumVertices;
-		numOfDrawCalls++;
-	}
-	if (leftToDraw != 0)
-	{
-		SetSubData(leftToDraw, maxNumVertices - leftToDraw, nullptr);
-		SetSubData(0, leftToDraw, &vertices[vertPointer]);
-		glDrawElements(GL_TRIANGLES, leftToDraw / primitive.GetVertexCount() * primitive.GetIndexCount(), GL_UNSIGNED_INT, 0);
-		numOfDrawCalls++;
-	}
-	vao.Unbind();
-	textureIds.clear();
+	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 }
 
-
-void Batch::Update(Primitive& primitive, const std::shared_ptr<uint32_t>& textureId)
+void Batch::Update(const std::vector<Vertex>& vertices, const std::shared_ptr<Texture>& texture)
 {
-	if (textureId != nullptr)
+	if (textureSlotIndex > textureSlots.size() || curVertexCount >= maxNumVertices)
 	{
-		textureIds.emplace_back(*textureId);
+		EndBatch();
+		Flush();
+		BeginBatch();
 	}
-	for (size_t i = 0; i < primitive.GetVertexCount(); i++)
+	int textureIndex = 0;
+	for (size_t i = 1; i < textureSlotIndex; i++)
 	{
-		vertices[curVertex] = primitive.GetVertices()[i];
-		curVertex++;
+		if (texture->GetId() == textureSlots[i])
+		{
+			textureIndex = textureSlots[i];
+		}
 	}
-}
-
-void Batch::SetSubData()
-{
-	vbo.SetSubData(vertices);
+	if (textureIndex == 0)
+	{
+		textureSlots[textureSlotIndex] = texture->GetId();
+		textureSlotIndex++;
+	}
+	for (size_t i = 0; i < vertices.size(); i++)
+	{
+		this->vertices[curVertexCount] = vertices[i];
+		curVertexCount++;
+	}
 }
 
 void Batch::SetSubData(uint32_t offsetCount, uint32_t count, const void* data)
 {
+	// binds buffer
 	vbo.SetSubData(offsetCount, count, data);
 }
 

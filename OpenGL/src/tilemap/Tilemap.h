@@ -5,6 +5,7 @@
 #include "glm/glm.hpp"
 #include "Mesh.h"
 #include "TextureManager.h"
+#include "Batch.h"
 
 class Tilemap
 {

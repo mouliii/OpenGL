@@ -11,6 +11,13 @@
 
 #include "tilemap/Tilemap.h"
 
+
+/*
+transform - primitive localiks
+camera 0,0 keskelle - esim zoomaa vas ala
+batch rendering
+*/
+
 class Game
 {
 public:
@@ -33,6 +40,7 @@ private:
 public:
 	Tilemap map;
 	float cameraSpeed = 150.f;
+	Batch batch;
 public:
 	void MoveCamera(float dt);
 };

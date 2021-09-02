@@ -14,6 +14,7 @@ Renderer::Renderer(OrthoCamera* camera)
 	vao.LinkAttribute(vbo, 0, 3, GL_FLOAT, sizeof(Vertex), (GLvoid*)offsetof(Vertex, pos));
 	vao.LinkAttribute(vbo, 1, 4, GL_FLOAT, sizeof(Vertex), (GLvoid*)offsetof(Vertex, color));
 	vao.LinkAttribute(vbo, 2, 2, GL_FLOAT, sizeof(Vertex), (GLvoid*)offsetof(Vertex, texCoord));
+	vao.LinkAttribute(vbo, 3, 1, GL_FLOAT, sizeof(Vertex), (GLvoid*)offsetof(Vertex, textureIndex));
 
 	vao.Unbind();
 	vbo.Unbind();
@@ -101,7 +102,7 @@ void Renderer::ImmediateDraw(Primitive& primitive)
 {
 	vao.Bind();
 	vbo.Bind();
-	vbo.SetData(primitive.GetVertexCount() * sizeof(Vertex), primitive.GetVertices().data());
+	vbo.SetData(primitive.GetVertexCount() * sizeof(primitive.GetSizeofVertex()), primitive.GetVertices().data());
 	ibo.Bind();
 	ibo.SetData(primitive.GetIndices());
 	glDrawElements(GL_TRIANGLES, primitive.GetIndexCount(), GL_UNSIGNED_INT, 0);
@@ -111,7 +112,7 @@ void Renderer::ImmediateDraw(Primitive& primitive)
 void Renderer::ImmediateDraw(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices)
 {
 	vao.Bind();
-	vbo.Bind();
+	vbo.Bind();						// todo: ei toimi jos eri *Vertex* struct
 	vbo.SetData(vertices.size() * sizeof(Vertex), vertices.data());
 	ibo.Bind();
 	ibo.SetData(indices);

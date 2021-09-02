@@ -37,6 +37,13 @@ public:
 		//}
 		this->color = color;
 	}
+	void SetTextureIndex(float i)
+	{
+		for (size_t i = 0; i < vertices.size(); i++)
+		{
+			vertices[i].textureIndex = (float)i;
+		}
+	}
 	const std::shared_ptr<Texture> GetTexture() const { return texture; }
 	const std::vector<Vertex>& GetVertices() const { return vertices; }
 	const std::vector<uint32_t>& GetIndices() const { return indices; }
