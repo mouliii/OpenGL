@@ -16,7 +16,6 @@ public:
 		out.y = cells[1][0] * v.x + cells[1][1] * v.y;
 		return out;
 	}
-	// toimii !
 	Mat4 operator*(const Mat4& rhs) const
 	{
 		Mat4 out;

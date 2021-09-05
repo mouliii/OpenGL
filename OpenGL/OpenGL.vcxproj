@@ -189,6 +189,7 @@
     <ClInclude Include="src\Renderer.h" />
     <ClInclude Include="src\Shape.h" />
     <ClInclude Include="src\Rectangle.h" />
+    <ClInclude Include="src\TestingAssets\Player.h" />
     <ClInclude Include="src\Texture.h" />
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\TextureManager.h" />
@@ -536,6 +537,8 @@
     <None Include="res\shaders\DefaultFragment.shader" />
     <None Include="res\shaders\DefaultVertex.shader" />
     <None Include="res\shaders\DefaultBatchVertex.shader" />
+    <None Include="res\shaders\NewFragment.shader" />
+    <None Include="res\shaders\NewVertex.shader" />
     <None Include="src\utils\glm\detail\func_common.inl" />
     <None Include="src\utils\glm\detail\func_common_simd.inl" />
     <None Include="src\utils\glm\detail\func_exponential.inl" />

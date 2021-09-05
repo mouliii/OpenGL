@@ -10,12 +10,12 @@
 #include "Collision.h"
 
 #include "tilemap/Tilemap.h"
+#include "TestingAssets/Player.h"
 
 
 /*
 transform - primitive localiks
-camera 0,0 keskelle - esim zoomaa vas ala
-batch rendering
+tilemap render screen size
 */
 
 class Game
@@ -41,6 +41,7 @@ public:
 	Tilemap map;
 	float cameraSpeed = 150.f;
 	Batch batch;
+	Player player;
 public:
 	void MoveCamera(float dt);
 };

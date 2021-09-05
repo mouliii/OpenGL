@@ -1160,6 +1160,9 @@
     <ClInclude Include="src\Mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\TestingAssets\Player.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\utils\glm\detail\func_common.inl">
@@ -1574,6 +1577,8 @@
     <None Include="res\shaders\DefaultBatchFragment.shader" />
     <None Include="res\shaders\DefaultVertex.shader" />
     <None Include="res\shaders\DefaultFragment.shader" />
+    <None Include="res\shaders\NewVertex.shader" />
+    <None Include="res\shaders\NewFragment.shader" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\textures\plul.jpg">

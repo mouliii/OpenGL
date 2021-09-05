@@ -21,6 +21,7 @@ Renderer::Renderer(OrthoCamera* camera)
 	ibo.Unbind();
 
 	defaultTexture = TextureManager::LoadTexture("res/textures/white1x1.png");
+	shader.Unbind();
 	//// 1x1 white texture
 	//uint32_t wpId;
 	//glCreateTextures(GL_TEXTURE_2D, 1, &wpId);
@@ -66,6 +67,18 @@ void Renderer::Draw(Primitive& primitive, const glm::vec4& color)
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, defaultTexture->GetId() );
 	ImmediateDraw(primitive);
+}
+void Renderer::Draw(Mesh& mesh, const Texture* texture, glm::mat4& transform, Shader& shader)
+{
+	shader.Bind(); 
+	glm::mat4 viewProj = camera->GetViewProjectionMatrix();
+	shader.SetUniform4fv("uViewProj", viewProj);
+	shader.SetUniform4f("uColor", glm::vec4(1.f));
+	shader.SetUniform4fv("uTransform", transform);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture->GetId());
+	ImmediateDraw(mesh.GetVertices(), mesh.GetIndices());
+	shader.Unbind();
 }
 void Renderer::Draw(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices, const Texture* texture)
 {

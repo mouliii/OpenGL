@@ -204,6 +204,7 @@ int main(void)
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
     }
+    TextureManager::FreeUnusedTextures();
 
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();

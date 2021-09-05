@@ -61,7 +61,8 @@ Tilemap::Tilemap(const std::string& tiledDataPath, const std::string& tiledTileD
 					float uv_tr_y = cord_tr_y  / float(texture->GetHeight());
 
 					mesh.SetTextureIndex((float)texture->GetId());
-					mesh.SetTextureUV({ uv_bl_x, uv_bl_y }, { uv_tr_x, uv_tr_y });
+					const float padding = 1.f / 512.f;
+					mesh.SetTextureUV({ uv_bl_x + padding, uv_bl_y + padding }, { uv_tr_x - padding, uv_tr_y - padding });
 					layerTiles.push_back(mesh);
 				}
 				index_x += tileWidth;

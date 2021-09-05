@@ -9,8 +9,10 @@ Game::Game(GLFWwindow* window)
     camera(-windowWidth/2.f, windowWidth / 2.f, -windowHeight/2.f, windowHeight / 2.f),
     renderer(&camera),
     map("res/levels/level1/test_map.json", "todo", "res/levels/level1/Tileset.png"),
-    batch("tilemap", Quad())
+    batch("tilemap", Quad()),
+    player(Quad({ 15.f,15.f }), {50.f,450.f}, "res/textures/awesomeface.png")
 {
+    batch.cam = &camera;
 }
 
 Game::~Game()
@@ -53,43 +55,28 @@ void Game::Update()
     my = double(windowHeight) - my;
     mousePos = Vec2f(float(mx), float(my));
 
-    MoveCamera(dt);
+    player.Update(window, dt);
+
+    //MoveCamera(dt);
+    camera.SetPosition({ player.GetPostion().x, player.GetPostion().y });
     camera.RecalculateViewMatrix();
 
 }
 
 void Game::Draw()
 {
-    batch.cam = &camera;
     batch.BeginBatch();
     for (size_t i = 0; i < map.GetTiles().size(); i++)
     {
         for (size_t j = 0; j < map.GetTiles()[i].size(); j++)
         {
-           // renderer.Draw(map.GetTiles()[i][j]);
-           // const auto& verts = map.GetTiles()[i][j].GetVertices();
-           // batch.Update(verts, map.GetTiles()[i][j].GetTexture());
             batch.Update(map.GetTiles()[i][j]);
         }
     }
     batch.EndBatch();
     batch.Flush();
-    
-    Quad q1({ 150.f,150.f }, { 15.f,15.f }, glm::vec4(1.f));
-    Quad q2({ 350.f,150.f }, { 15.f,15.f }, glm::vec4(1.f));
-    Mesh m1(q1);
-    Mesh m2(q2);
-    m1.LoadTexture("res/textures/plul.jpg");
-    m2.LoadTexture("res/textures/awesomeface.png");
-    Batch b2("wtf",Quad());
-    b2.cam = &camera;
-    b2.BeginBatch();
-    b2.Update(m1);
-    b2.Update(m2);
-    b2.EndBatch();
-    b2.Flush();
 
-
+    player.Draw(renderer);
 
     // imgui
     ImGui::Begin("Test");
@@ -115,6 +102,5 @@ void Game::MoveCamera(float dt)
         camera.scale -= 0.4f * dt;
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
         camera.scale += 0.4f * dt;
-        std::cout << camera.scale << std::endl;
     }
 }
