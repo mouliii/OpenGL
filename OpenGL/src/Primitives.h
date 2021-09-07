@@ -46,15 +46,15 @@ public:
 
 		indices = { 0,1,2, 2,3,0 };
 	}
-	Quad(Vec2f halfSize)
+	Quad(Vec2f halfSize, glm::vec4 color = glm::vec4(1.f))
 		:
 		Primitive()
 	{
 		vertices.reserve(4);
-		vertices.push_back({ Vec3f(Vec2f(0.0f - halfSize.x, 0.0f - halfSize.y), 0.0f), glm::vec4(1.0f), Vec2f(0.0f, 0.0f), 0.0f });
-		vertices.push_back({ Vec3f(Vec2f(0.0f + halfSize.x, 0.0f - halfSize.y), 0.0f), glm::vec4(1.0f), Vec2f(1.0f, 0.0f), 0.0f });
-		vertices.push_back({ Vec3f(Vec2f(0.0f + halfSize.x, 0.0f + halfSize.y), 0.0f), glm::vec4(1.0f), Vec2f(1.0f, 1.0f), 0.0f });
-		vertices.push_back({ Vec3f(Vec2f(0.0f - halfSize.x, 0.0f + halfSize.y), 0.0f), glm::vec4(1.0f), Vec2f(0.0f, 1.0f), 0.0f });
+		vertices.push_back({ Vec3f(Vec2f(0.0f - halfSize.x, 0.0f - halfSize.y), 0.0f), color, Vec2f(0.0f, 0.0f), 0.0f });
+		vertices.push_back({ Vec3f(Vec2f(0.0f + halfSize.x, 0.0f - halfSize.y), 0.0f), color, Vec2f(1.0f, 0.0f), 0.0f });
+		vertices.push_back({ Vec3f(Vec2f(0.0f + halfSize.x, 0.0f + halfSize.y), 0.0f), color, Vec2f(1.0f, 1.0f), 0.0f });
+		vertices.push_back({ Vec3f(Vec2f(0.0f - halfSize.x, 0.0f + halfSize.y), 0.0f), color, Vec2f(0.0f, 1.0f), 0.0f });
 		indices = { 0,1,2, 2,3,0 };
 	}
 private:

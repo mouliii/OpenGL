@@ -3,22 +3,29 @@
 #include <vector>
 #include "Vec2.h"
 #include "glm/glm.hpp"
-#include "Mesh.h"
+#include "Tile.h"
 #include "TextureManager.h"
-#include "Batch.h"
 
 class Tilemap
 {
 public:
 	Tilemap(const std::string& tiledDataPath, const std::string& tiledTileData, const std::string& tileMapTexture);
-	std::vector<std::vector<Mesh>>& GetTiles() { return tiles; }
+	~Tilemap()
+	{
+		for (size_t i = 0; i < tiles.size(); i++)
+		{
+			tiles[i].pop_back();
+		}
+	}
+	std::vector<std::vector<Tile>>& GetTiles() { return tiles; }
+	//const std::vector<Quad>& GetCollisionTiles() const { return collisionTiles; }
 private:
-	std::shared_ptr<Texture> texture;
 	int mapWidthInTiles;
 	int mapHeightInTiles;
 	int tileHeight;
 	int tileWidth;
 	std::string orientation;
 	std::string renderOrder;
-	std::vector<std::vector<Mesh>> tiles;
+	std::vector<std::vector<Tile>> tiles;
+	//std::vector<Quad> collisionTiles;
 };

@@ -7,15 +7,18 @@
 #include <random>
 #include "OrthoCamera.h"
 #include "Renderer.h"
-#include "Collision.h"
+#include "Batch.h"
 
 #include "tilemap/Tilemap.h"
 #include "TestingAssets/Player.h"
+
+#include "box2d/box2d.h"
 
 
 /*
 transform - primitive localiks
 tilemap render screen size
+b2World poionter
 */
 
 class Game
@@ -39,9 +42,13 @@ private:
 
 public:
 	Tilemap map;
+
+
+
 	float cameraSpeed = 150.f;
 	Batch batch;
 	Player player;
+	b2World world;
 public:
 	void MoveCamera(float dt);
 };

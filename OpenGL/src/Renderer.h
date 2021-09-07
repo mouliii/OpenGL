@@ -28,9 +28,10 @@ public:
 	Renderer(OrthoCamera* camera);
 	void BeginFrame();
 	void EndFrame();
+	void DrawTexture(const Vec2f& pos, const Texture* texture);
 	void Draw(Primitive& primitive, const Texture* texture);
 	void Draw(Primitive& primitive, const glm::vec4& color);
-	void Draw(Mesh& mesh, const Texture* texture, glm::mat4& transform, Shader& shader);
+	void Draw(Primitive& primitive, const Texture* texture, glm::mat4& transform, Shader& shader);
 	void Draw(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices, const Texture* texture);
 	void Draw(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices, const glm::vec4& color);
 	void Draw(Mesh& mesh);

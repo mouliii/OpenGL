@@ -154,7 +154,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Batch.cpp" />
-    <ClCompile Include="src\Collision.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\IndexBuffer.cpp" />
@@ -177,7 +176,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Batch.h" />
-    <ClInclude Include="src\Collision.h" />
     <ClInclude Include="src\Game.h" />
     <ClInclude Include="src\IndexBuffer.h" />
     <ClInclude Include="src\Mat3.h" />
@@ -193,6 +191,7 @@
     <ClInclude Include="src\Texture.h" />
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\TextureManager.h" />
+    <ClInclude Include="src\tilemap\Tile.h" />
     <ClInclude Include="src\Tilemap\Tilemap.h" />
     <ClInclude Include="src\utils\box2d\b2_api.h" />
     <ClInclude Include="src\utils\box2d\b2_block_allocator.h" />

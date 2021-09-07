@@ -2,7 +2,7 @@
 
 Batch::Batch(std::string batchName, Primitive batchType, uint32_t maxBatchCount)
 	:
-	name(batchName), shader("res/shaders/DefaultBatchVertex.shader", "res/shaders/DefaultBatchFragment.shader"), primitive(batchType),
+	name(batchName), shader("res/shaders/DefaultBatchVertex.shader", "res/shaders/DefaultBatchFragment.shader"), 
 	maxBatchCount(maxBatchCount), maxNumVertices(maxBatchCount * batchType.GetVertexCount()), maxNumIndices(maxBatchCount* batchType.GetIndexCount()),
 	vao(),vbo(),ibo()
 {
@@ -132,6 +132,42 @@ void Batch::Update(Mesh& mesh)
 	for (size_t i = 0; i < mesh.GetVertices().size(); i++)
 	{
 		this->vertices[curVertexCount] = mesh.GetVertices()[i];
+		curVertexCount++;
+	}
+}
+
+void Batch::Update(Primitive& primi, const Texture* texture)
+{
+	if (textureSlotIndex > textureSlots.size() || curVertexCount >= maxNumVertices)
+	{
+		EndBatch();
+		Flush();
+		BeginBatch();
+	}
+	int textureIndex = 0;
+	for (size_t i = 1; i < textureSlotIndex; i++)
+	{
+		if (texture->GetId() == textureSlots[i])
+		{
+			textureIndex = textureSlots[i];
+			for (size_t j = 0; j < primi.vertices.size(); j++)
+			{
+				primi.vertices[j].textureIndex = (float)i;
+			}
+		}
+	}
+	if (textureIndex == 0)
+	{
+		textureSlots[textureSlotIndex] = texture->GetId();
+		for (size_t i = 0; i < primi.vertices.size(); i++)
+		{
+			primi.vertices[i].textureIndex = (float)textureSlotIndex;
+		}
+		textureSlotIndex++;
+	}
+	for (size_t i = 0; i < primi.GetVertices().size(); i++)
+	{
+		this->vertices[curVertexCount] = primi.GetVertices()[i];
 		curVertexCount++;
 	}
 }

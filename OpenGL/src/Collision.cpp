@@ -79,7 +79,7 @@ bool Collision::DynamicRectVsRect(const Rect& dynamic, const Vec2f& velocity, co
 	return false;
 }
 
-bool Collision::SweptAABB(Rect& dynamic, Vec2f& vel, const Rect& staticRect, const float dt)
+bool Collision::SweptAABB( Rect& dynamic, Vec2f& vel, Rect& staticRect, const float dt)
 {
 	Vec2f cn = {0.f,0.f};
 	Vec2f cp = { 0.f,0.f };

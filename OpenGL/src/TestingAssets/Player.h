@@ -5,16 +5,17 @@
 #include "GLFW/glfw3.h"
 #include "Renderer.h"
 
+#include "Rect.h"
+
 
 class Player
 {
 public:
-	Player(Primitive prim, Vec2f pos, const std::string& texturePath)
+	Player(Vec2f pos, Vec2f halfSize, const std::string& texturePath)
 		:
-		mesh(prim), pos(pos), shader("res/shaders/NewVertex.shader", "res/shaders/NewFragment.shader")
+		pos(pos), halfSize(halfSize), shader("res/shaders/NewVertex.shader", "res/shaders/NewFragment.shader"),
+		rect(halfSize), pTexture(std::make_shared<Texture>(texturePath))
 	{
-		mesh.LoadTexture(texturePath);
-		//transform = glm::translate(glm::mat4(1.f), glm::vec3(pos.x, pos.y, 0.0f));
 	}
 	void Update(GLFWwindow* window, float dt)
 	{
@@ -30,17 +31,24 @@ public:
 		dir.Normalize();
 		vel = dir * speed;
 		pos += vel * dt;
+		rect.SetPosition(pos);
 	}
 	void Draw(Renderer& renderer)
 	{
 		transform = glm::translate(glm::mat4(1.f), glm::vec3(pos.x, pos.y, 0.0f));
-		renderer.Draw(mesh, mesh.GetTexture().get(), transform, shader);
-		//std::cout << transform[3].x << " " << transform[3].y << std::endl;
+		renderer.Draw(rect.GetPrimitive(), pTexture.get(), transform, shader);
 	}
+
+	Rect& GetRect() { return rect; }
 	const Vec2f GetPostion() const { return pos; }
+	Vec2f& GetVelocity()  { return vel; }
+	const Vec2f GetHalfSize()const { return halfSize; }
+
 private:
-	Mesh mesh;
 	Vec2f pos;
+	Vec2f halfSize;
+	Rect rect;
+	std::shared_ptr<Texture> pTexture;
 	glm::mat4 transform = glm::mat4(1.f);
 	Vec2f vel = {0.0f,0.0f};
 	float speed = 220.f;

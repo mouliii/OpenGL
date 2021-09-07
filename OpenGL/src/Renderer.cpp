@@ -42,6 +42,12 @@ void Renderer::EndFrame()
 {
 }
 
+void Renderer::DrawTexture(const Vec2f& pos, const Texture* texture)
+{
+	Quad q(pos, Vec2f(texture->GetWidth() / 2.f, texture->GetHeight() / 2.f), glm::vec4(1.f));
+	Draw(q, texture);
+}
+
 void Renderer::Draw(Primitive& primitive, const Texture* texture)
 {
 	// set default shader
@@ -68,7 +74,7 @@ void Renderer::Draw(Primitive& primitive, const glm::vec4& color)
 	glBindTexture(GL_TEXTURE_2D, defaultTexture->GetId() );
 	ImmediateDraw(primitive);
 }
-void Renderer::Draw(Mesh& mesh, const Texture* texture, glm::mat4& transform, Shader& shader)
+void Renderer::Draw(Primitive& primitive, const Texture* texture, glm::mat4& transform, Shader& shader)
 {
 	shader.Bind(); 
 	glm::mat4 viewProj = camera->GetViewProjectionMatrix();
@@ -77,7 +83,7 @@ void Renderer::Draw(Mesh& mesh, const Texture* texture, glm::mat4& transform, Sh
 	shader.SetUniform4fv("uTransform", transform);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture->GetId());
-	ImmediateDraw(mesh.GetVertices(), mesh.GetIndices());
+	ImmediateDraw(primitive.GetVertices(), primitive.GetIndices());
 	shader.Unbind();
 }
 void Renderer::Draw(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices, const Texture* texture)
@@ -114,8 +120,8 @@ void Renderer::Draw(Mesh& mesh)
 void Renderer::ImmediateDraw(Primitive& primitive)
 {
 	vao.Bind();
-	vbo.Bind();
-	vbo.SetData(primitive.GetVertexCount() * sizeof(primitive.GetSizeofVertex()), primitive.GetVertices().data());
+	vbo.Bind();				// todo: ei toimi jos eri *Vertex* struct
+	vbo.SetData(primitive.GetVertexCount() * sizeof(Vertex), primitive.GetVertices().data());
 	ibo.Bind();
 	ibo.SetData(primitive.GetIndices());
 	glDrawElements(GL_TRIANGLES, primitive.GetIndexCount(), GL_UNSIGNED_INT, 0);

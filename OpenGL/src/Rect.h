@@ -1,56 +1,55 @@
 #pragma once
 
 #include <iostream>
+#include "glm/gtc/matrix_transform.hpp"
 #include "Mat3.h"
 #include "Vec3.h"
 #include "Vec2.h"
 #include "Primitives.h"
 
 #include "Renderer.h"
-#include "OrthoCamera.h"
 
 class Rect
 {
 public:
-	Rect(Vec2f centerPos, Vec2f halfSize, glm::vec4 color)
+	Rect(Vec2f halfSize, glm::vec4 color = glm::vec4(1.0f))
 		:
-		pos(centerPos), halfSize(halfSize), color(color),
-		quad(centerPos, halfSize, color)
+		quad(halfSize, color)
 	{
-		//localVertices.reserve(4);
-		//localVertices.emplace_back(Vec2f(0 - halfSize.x, 0 - halfSize.y));
-		//localVertices.emplace_back(Vec2f(0 + halfSize.x, 0 - halfSize.y));
-		//localVertices.emplace_back(Vec2f(0 + halfSize.x, 0 + halfSize.y));
-		//localVertices.emplace_back(Vec2f(0 - halfSize.x, 0 + halfSize.y));
-	};
-
-	void Draw(Renderer& renderer)
-	{
-		SetVertexPositions();
-		renderer.Draw(quad, texture.get() );
+		transform = glm::mat4(1.f);
 	}
-	void Draw(Renderer& renderer, const OrthoCamera& camera, Texture* texture)
+	Rect(Vec2f pos, Vec2f halfSize, glm::vec4 color = glm::vec4(1.0f))
+		:
+		quad(pos, halfSize, color)
 	{
-		//auto asd = texture->GetID();
-		renderer.Draw(quad, texture );
+		transform = glm::translate(glm::mat4(1.f), glm::vec3(pos.x, pos.y, 0.0f));
 	}
-	void SetVertexPositions()
+	void SetPosition(Vec2f pos)
 	{
-		auto& verts = quad.GetVertices();
-		verts[0].pos = Vec3f(Vec2f(pos.x - halfSize.x, pos.y - halfSize.y), 0.0f);
-		verts[1].pos = Vec3f(Vec2f(pos.x + halfSize.x, pos.y - halfSize.y), 0.0f);
-		verts[2].pos = Vec3f(Vec2f(pos.x + halfSize.x, pos.y + halfSize.y), 0.0f);
-		verts[3].pos = Vec3f(Vec2f(pos.x - halfSize.x, pos.y + halfSize.y), 0.0f);
+		transform = glm::translate(glm::mat4(1.f), glm::vec3(pos.x, pos.y, 0.0f));
 	}
-	void LoadTexture(const std::string& path)
+	void Translate(Vec2f offset)
 	{
-		texture = TextureManager::LoadTexture(path);
+		transform = glm::translate(transform, glm::vec3(offset.x, offset.y, 0.0f));
 	}
+	void SetTextureUV(Vec2f botLeft, Vec2f topRight)
+	{
+		quad.GetVertices()[0].texCoord = { botLeft.x, botLeft.y };
+		quad.GetVertices()[1].texCoord = { topRight.x, botLeft.y };
+		quad.GetVertices()[2].texCoord = { topRight.x, topRight.y };
+		quad.GetVertices()[3].texCoord = { botLeft.x, topRight.y };
+	}
+	void SetTextureIndex(float index)
+	{
+		for (size_t i = 0; i < quad.GetVertices().size(); i++)
+		{
+			quad.GetVertices()[i].textureIndex = index;
+		}
+	}
+	// todo transform class tai jtn
+	const glm::mat4& GetTransform() const { return transform; }
+	Quad& GetPrimitive() { return quad; }
 public:
-	//std::vector<Vec2f> localVertices;
 	Quad quad;
-	Vec2f pos;
-	Vec2f halfSize;
-	glm::vec4 color;
-	std::shared_ptr<Texture> texture;
+	glm::mat4 transform;
 };

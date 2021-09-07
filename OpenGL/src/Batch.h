@@ -24,13 +24,14 @@ public:
 	void Flush();
 	void Update(const std::vector<Vertex>& vertices, const std::shared_ptr<Texture>& texture);
 	void Update(Mesh& mesh);
+	void Update(Primitive& primi, const Texture* texture);
 	void SetSubData(uint32_t offsetCount, uint32_t count, const void* data);
 private:
 	std::string name;
 	std::vector<Vertex> vertices;
 	std::vector<uint32_t> indices;
 	std::vector<uint32_t> textureSlots;
-	Primitive primitive;
+	//Primitive primitive;
 	VertexArray vao;
 	VertexBuffer vbo;
 	IndexBuffer ibo;
