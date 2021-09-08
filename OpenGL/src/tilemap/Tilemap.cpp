@@ -1,7 +1,7 @@
 #include "Tilemap.h"
 #include <fstream>
 
-Tilemap::Tilemap(const std::string& tiledDataPath, const std::string& tiledTileData, const std::string& tileMapTexture)
+Tilemap::Tilemap(const std::string& tiledDataPath, const std::string& tiledTileData, const std::string& tileMapTexture, b2World* world)
 {
 	// load texture
 	const auto texture = TextureManager::LoadTexture(tileMapTexture);
@@ -10,32 +10,32 @@ Tilemap::Tilemap(const std::string& tiledDataPath, const std::string& tiledTileD
 	nlohmann::json json2;
 	std::ifstream instream2;
 	instream2.open(tiledTileData);
-	//instream2 >> json2;
+	instream2 >> json2;
 	instream2.close();
 
 	
-	//struct ColArea
-	//{
-	//	float x = 0;
-	//	float y = 0;
-	//	float width = 0;
-	//	float height = 0;
-	//};
-	//std::map<uint32_t, ColArea> collisionData;
+	struct ColArea
+	{
+		float x = 0;
+		float y = 0;
+		float width = 0;
+		float height = 0;
+	};
+	std::map<uint32_t, ColArea> collisionData;
 
-	//for (size_t c = 0; c < json2["tiles"].size(); c++)
-	//{
-	//	ColArea area;
-	//	const auto arrPath = json2["tiles"][c]["objectgroup"]["objects"][0];
-	//
-	//	uint32_t tileId = json2["tiles"][c]["id"];
-	//	area.x = arrPath["x"];
-	//	area.y = arrPath["y"];
-	//	area.width = arrPath["width"];
-	//	area.height = arrPath["height"];
-	//
-	//	collisionData.insert({ tileId, area});
-	//}
+	for (size_t c = 0; c < json2["tiles"].size(); c++)
+	{
+		ColArea area;
+		const auto arrPath = json2["tiles"][c]["objectgroup"]["objects"][0];
+	
+		uint32_t tileId = json2["tiles"][c]["id"];
+		area.x = arrPath["x"];
+		area.y = arrPath["y"];
+		area.width = arrPath["width"];
+		area.height = arrPath["height"];
+	
+		collisionData.insert({ tileId, area});
+	}
 
 	// read  map data
 	// add collisions based on id
@@ -101,25 +101,38 @@ Tilemap::Tilemap(const std::string& tiledDataPath, const std::string& tiledTileD
 					tileLayer.push_back(tile);
 					
 
-					//// collision tiles
-					//for (auto it = collisionData.begin(); it != collisionData.end(); it++)
-					//{
-					//	if (id == it->first)
-					//	{
-					//		// height = maxH - y
-					//		// oikea_y = maxH - y - h
-					//
-					//		Vec2f botLeft((float)index_x, (float)index_y - tileHeight);
-					//		// offset botleft
-					//		botLeft += {it->second.x, tileHeight - it->second.y - it->second.height};
-					//		// -> top right
-					//		Vec2f topRight = {botLeft.x + it->second.width, botLeft.y + it->second.height};
-					//		//collisionTiles.push_back({ { botLeft.x + (topRight.x-botLeft.x)*0.5f, botLeft.y + +(topRight.y - botLeft.y) * 0.5f },
-					//		//	{ it->second.width*0.5f, it->second.height*0.5f },
-					//		//	glm::vec4(1.f) });
-					//		break;
-					//	}
-					//}
+					// collision tiles
+					for (auto it = collisionData.begin(); it != collisionData.end(); it++)
+					{
+						if (id == it->first)
+						{
+							// height = maxH - y
+							// oikea_y = maxH - y - h
+					
+							Vec2f botLeft((float)index_x, (float)index_y - tileHeight);
+							// offset botleft
+							botLeft += {it->second.x, tileHeight - it->second.y - it->second.height};
+							// -> top right
+							Vec2f topRight = {botLeft.x + it->second.width, botLeft.y + it->second.height};
+							collisionTiles.push_back({ { botLeft.x + (topRight.x-botLeft.x)*0.5f, botLeft.y + (topRight.y - botLeft.y) * 0.5f },
+								{ it->second.width*0.5f, it->second.height*0.5f },
+								glm::vec4(1.f) });
+
+
+							b2BodyDef bodyDef;
+							bodyDef.type = b2_staticBody;
+							bodyDef.position.Set( (botLeft.x + (topRight.x - botLeft.x) * 0.5f) / Box2dC::pixelPerMeter,
+													(botLeft.y + (topRight.y - botLeft.y)) / Box2dC::pixelPerMeter);
+							b2Body* groundBody = world->CreateBody(&bodyDef);
+
+							b2PolygonShape staticBox;
+							staticBox.SetAsBox( (it->second.width * 0.5f) / Box2dC::pixelPerMeter, (it->second.height * 0.5f) / Box2dC::pixelPerMeter);
+
+							groundBody->CreateFixture(&staticBox, 0.0f);
+
+							break;
+						}
+					}
 				}
 				index_x += tileWidth;
 				if (index_x % (mapWidthInTiles * tileWidth) == 0)

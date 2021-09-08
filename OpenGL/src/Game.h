@@ -39,16 +39,12 @@ private:
 	Vec2<float> mousePos = { 0.0f,0.0f };
 	float lastFrameTime = 0.0f;
 	float dt = 0.0f;
-
-public:
-	Tilemap map;
-
-
-
 	float cameraSpeed = 150.f;
+public:
+	std::unique_ptr<b2World> world;
+	Tilemap map;
 	Batch batch;
 	Player player;
-	b2World world;
 public:
 	void MoveCamera(float dt);
 };

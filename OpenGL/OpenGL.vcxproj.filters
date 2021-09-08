@@ -1160,6 +1160,9 @@
     <ClInclude Include="src\tilemap\Tile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Box2dConstants.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\utils\glm\detail\func_common.inl">

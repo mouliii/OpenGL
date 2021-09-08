@@ -176,6 +176,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Batch.h" />
+    <ClInclude Include="src\Box2dConstants.h" />
     <ClInclude Include="src\Game.h" />
     <ClInclude Include="src\IndexBuffer.h" />
     <ClInclude Include="src\Mat3.h" />

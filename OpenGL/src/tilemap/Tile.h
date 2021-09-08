@@ -6,7 +6,6 @@
 #include "Rect.h"
 #include "Renderer.h"
 
-
 class Tile
 {
 public:

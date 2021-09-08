@@ -8,10 +8,10 @@ Game::Game(GLFWwindow* window)
     //camera(0.0f, windowWidth, 0.0f, windowHeight),
     camera(-windowWidth/2.f, windowWidth / 2.f, -windowHeight/2.f, windowHeight / 2.f),
     renderer(&camera),
-    map("res/levels/level1/test_map.json", "res/levels/level1/test_tileset.json", "res/levels/level1/Tileset.png"),
+    map("res/levels/level1/test_map.json", "res/levels/level1/test_tileset.json", "res/levels/level1/Tileset.png", world.get()),
     batch("tilemap", Quad()),
-    player({ 50.f, 450.f }, {10.f,10.f}, "res/textures/awesomeface.png"), 
-    world(b2Vec2(0.f, -10.f))
+    player({ 50.f, 450.f }, {10.f,10.f}, "res/textures/awesomeface.png", world.get()), 
+    world(std::make_unique<b2World>(b2Vec2(0.f, 0.f)))
 {
     batch.cam = &camera;
     camera.scale = 0.71f;
@@ -56,7 +56,12 @@ void Game::Update()
     glfwGetCursorPos(window, &mx, &my);
     my = double(windowHeight) - my;
     mousePos = Vec2f(float(mx), float(my));
-  
+    float timeStep = 1.0f / 144.0f;
+
+    world->Step(timeStep, 6, 2);
+    // todo - asd
+    Vec2f np = { player.body->GetPosition().x, player.body->GetPosition().y };
+    player.pos = np * Box2dC::pixelPerMeter;
     player.Update(window, dt);
     
     //MoveCamera(dt);
@@ -79,8 +84,14 @@ void Game::Draw()
      batch.Flush();
 
     player.Draw(renderer);
+    for (size_t i = 0; i < map.GetCollisionTiles().size(); i++)
+    {
+        renderer.Draw(map.GetCollisionTiles()[i], glm::vec4(1.f));
+    }
+    Quad q(player.pos, { 10.f,10.f }, glm::vec4(1.f));
+    renderer.Draw(q,glm::vec4(1.f));
    
-    auto tex = TextureManager::LoadTexture("res/levels/level1/Tileset.png");
+    static auto tex = TextureManager::LoadTexture("res/levels/level1/Tileset.png");
     renderer.DrawTexture({ -200.f, 400.f }, tex.get());
    
     // imgui
